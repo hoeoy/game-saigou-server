@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.houoy.game.saigou.dao.LoginMapper">
+
+    <select id="retrieveAllCount" resultType="java.lang.Integer">
+        select count(*) from sm_user
+    </select>
+    <select id="retrieveByCodeAndPwd" resultType="com.houoy.common.vo.UserVO">
+        select * from sm_user WHERE user_password = #{password} and user_code = #{code}
+    </select>
+    <select id="retrieveByMobileAndPwd" resultType="com.houoy.common.vo.UserVO">
+        select * from sm_user WHERE user_password = #{password} and mobile = #{mobile}
+    </select>
+    <select id="retrieveByEmailAndPwd" resultType="com.houoy.common.vo.UserVO">
+        select * from sm_user WHERE user_password = #{password} and email = #{email}
+    </select>
+    <select id="retrieveByCode" resultType="com.houoy.common.vo.UserVO">
+        select * from sm_user WHERE user_code = #{code}
+    </select>
+</mapper>
+
