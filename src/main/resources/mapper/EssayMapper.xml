@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.houoy.game.saigou.dao.EssayMapper">
+    <sql id="columnNames">
+        essay_code,essay_name,essay_subname,essay_content,ts_start,ts_end,pk_type,is_publish
+        ,pk_person,person_name,path_thumbnail
+    </sql>
+    <sql id="columnValues">
+        #{essay_code},#{essay_name},#{essay_subname},#{essay_content},#{ts_start},#{ts_end},#{pk_type},#{is_publish}
+        ,#{pk_person},#{person_name},#{path_thumbnail}
+    </sql>
+    <sql id="ifWhere">
+        <if test="pk_essay != null and pk_essay !=''">
+            pk_essay = #{pk_essay}
+        </if>
+        <if test="essay_subname != null and essay_subname !=''">
+            and essay_subname = #{essay_subname}
+        </if>
+        <if test="essay_name != null and essay_name !=''">
+            and essay_name like "%${essay_name}%"
+        </if>
+        <if test="ts_end != null and ts_end !=''">
+            and ts_end like "%${ts_end}%"
+        </if>
+        <if test="ts_start != null and ts_start !=''">
+            and ts_start like "%${ts_start}%"
+        </if>
+        <if test="pk_type != null and pk_type !=''">
+            and pk_type  = #{pk_type}
+        </if>
+        <if test="is_publish != null and is_publish !=''">
+            and is_publish like "%${is_publish}%"
+        </if>
+        <if test="pk_person != null and pk_person !=''">
+            and pk_person = #{pk_person}
+        </if>
+        <if test="person_name != null and person_name !=''">
+            and person_name like "%${person_name}%"
+        </if>
+    </sql>
+    <sql id="ifSet">
+        <if test="essay_code != null">essay_code=#{essay_code},</if>
+        <if test="essay_name != null">essay_name=#{essay_name},</if>
+        <if test="essay_subname != null">essay_subname=#{essay_subname},</if>
+        <if test="essay_content != null">essay_content=#{essay_content},</if>
+        <if test="ts_start != null">ts_start=#{ts_start},</if>
+        <if test="ts_end != null">ts_end=#{ts_end},</if>
+        <if test="pk_type != null">pk_type=#{pk_type},</if>
+        <if test="is_publish != null">is_publish=#{is_publish},</if>
+        <if test="pk_person != null">pk_person=#{pk_person},</if>
+        <if test="person_name != null">person_name=#{person_name},</if>
+        <if test="path_thumbnail != null">path_thumbnail=#{path_thumbnail},</if>
+    </sql>
+    <sql id="pk">
+        pk_essay = #{pk_essay}
+    </sql>
+
+    <select id="retrieveAll" resultType="java.util.Map">
+
+    </select>
+    <select id="retrieveByPK" resultType="java.util.Map">
+        select * from cms_essay where pk_essay = #{pk}
+    </select>
+    <select id="retrieveAllCount" resultType="java.lang.Long">
+        select count(*) from cms_essay
+        <where>
+            <include refid="ifWhere"/>
+        </where>
+    </select>
+    <select id="retrieveAllWithPage" resultType="com.houoy.game.saigou.vo.EssayVO">
+        select * from cms_essay
+        <where>
+            <include refid="ifWhere"/>
+        </where>
+        <if test="orderColumnName !=null and orderDir !=null and start !=null and length !=null" >
+            order by
+            ${orderColumnName} ${orderDir}
+            limit
+            #{start},#{length}
+        </if>
+    </select>
+
+    <insert id="saveByVO" parameterType="com.houoy.game.saigou.vo.EssayVO">
+        insert into cms_essay
+        (<include refid="columnNames"/>)
+        values
+        (<include refid="columnValues"/>)
+    </insert>
+
+    <update id="updateByVO">
+        update cms_essay
+        <trim prefix="SET" suffixOverrides=",">
+            <include refid="ifSet"/>
+        </trim>
+        where
+        <include refid="pk"/>
+    </update>
+
+    <delete id="deleteByPK">
+        delete from cms_essay where pk_essay=#{pk_essay}
+    </delete>
+
+    <delete id="deleteByPKs" parameterType="java.util.List">
+        delete from cms_essay where
+        <foreach collection="list" item="pk_essay" index="index"
+                 open="(" separator="or" close=")">
+            <include refid="pk"/>
+        </foreach>
+    </delete>
+
+</mapper>
+

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.houoy.game.saigou.dao.UserMapper">
+    <sql id="ifWhere">
+        <if test="user_code!=null and user_code!=''">
+            and user_code like "%${user_code}%"
+        </if>
+        <if test="user_name != null and user_name !=''">
+            and user_name like "%${user_name}%"
+        </if>
+        <if test="def1 != null and def1 !=''">
+            and def1 like "%${def1}%"
+        </if>
+    </sql>
+    <select id="retrieveByPK" resultType="java.util.Map">
+
+    </select>
+    <select id="retrieveAll" resultType="java.util.Map">
+        select * from sm_user
+    </select>
+    <select id="retrieveAllCount" resultType="java.lang.Long">
+        select count(*) from sm_user
+        <where>
+            <include refid="ifWhere"/>
+        </where>
+    </select>
+    <select id="retrieveAllWithPage" resultType="com.houoy.common.vo.UserVO">
+        select * from sm_user
+        <where>
+            <include refid="ifWhere"/>
+        </where>
+        order by
+        ${orderColumnName} ${orderDir}
+        limit
+        #{start},#{length}
+    </select>
+
+    <insert id="saveUserByVO" parameterType="com.houoy.common.vo.UserVO">
+        insert into sm_user(user_code,user_name,user_password,mobile,def1)
+        values
+        (#{user_code},#{user_name},#{user_password},#{mobile},#{def1})
+    </insert>
+
+    <update id="updateUserByVO">
+        update sm_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="user_code != null">user_code=#{user_code},</if>
+            <if test="user_name != null">user_name=#{user_name}</if>
+        </trim>
+
+        where pk_user=#{pk_user}
+    </update>
+
+    <delete id="deleteUser">
+        delete from sm_user where pk_user=#{pk_user}
+    </delete>
+
+    <delete id="deleteUsers" parameterType="java.util.List">
+        delete from sm_user where
+        <foreach collection="list" item="item" index="index"
+                 open="(" separator="or" close=")">
+            pk_user = #{item}
+        </foreach>
+    </delete>
+    <update id="updateUserRole" parameterType="com.houoy.common.vo.UserVO">
+          update sm_user set pk_role=#{pk_role} where pk_user=#{pk_user}
+    </update>
+
+</mapper>
+
