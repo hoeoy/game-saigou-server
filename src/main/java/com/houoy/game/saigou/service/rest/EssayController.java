@@ -7,6 +7,7 @@ import com.houoy.common.vo.PageResultVO;
 import com.houoy.common.vo.RequestResultVO;
 import com.houoy.game.saigou.service.EssayService;
 import com.houoy.game.saigou.vo.EssayVO;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import java.util.List;
 /**
  * Created by andyzhao on 2017-02-20.
  */
+@Api(description = "文章内容.与EssayType接口配合使用")
 @RestController
 @RequestMapping("/api/essay")
 public class EssayController {
@@ -105,7 +107,7 @@ public class EssayController {
         pageResultVO.setLength(essayVO.getLength());
         pageResultVO.setOrderColumnName(essayVO.getOrderColumnName());
         pageResultVO.setOrderDir(essayVO.getOrderDir());
-        pageResultVO.setTotal(count + "");
+        pageResultVO.setTotal(count);
         return pageResultVO;
     }
 }

@@ -6,6 +6,7 @@ import com.houoy.common.vo.SessionRootUserVO;
 import com.houoy.common.vo.UserVO;
 import com.houoy.game.saigou.config.WebSecurityConfig;
 import com.houoy.game.saigou.service.LoginService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +27,7 @@ import java.util.List;
  * @author andyzhao
  *         spring boot
  */
+@Api(description = "用户登录")
 @RestController
 @RequestMapping("/api/login")
 public class LoginController {

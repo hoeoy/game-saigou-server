@@ -37,7 +37,8 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("赛狗使用Swagger2.7构建RESTful APIs")
-                .description("如果有疑问可以及时沟通，主要负责人Andyzhao")
+                .description("所有关于钱的单位为:分（为了避免小数点运算）" +
+                        "如果有疑问可以及时沟通，主要负责人Andyzhao")
                 .termsOfServiceUrl("XXXXXXXXXXX")
                 .contact(new Contact("name","url","email"))
                 .version("1.0")

@@ -5,6 +5,7 @@ import com.houoy.common.vo.JquryDataTablesVO;
 import com.houoy.common.vo.RequestResultVO;
 import com.houoy.common.vo.UserVO;
 import com.houoy.game.saigou.service.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -19,6 +20,7 @@ import java.util.List;
 /**
  * @author andyzhao
  */
+@Api(description = "用户增删改查")
 @RestController
 @RequestMapping("/root/base/user")
 public class UserController {

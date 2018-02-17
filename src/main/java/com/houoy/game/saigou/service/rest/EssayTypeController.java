@@ -5,6 +5,7 @@ import com.houoy.common.vo.RequestResultVO;
 import com.houoy.common.vo.TreeVO;
 import com.houoy.game.saigou.service.EssayTypeService;
 import com.houoy.game.saigou.vo.EssayTypeVO;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * 文章类型目录管理
  * Created by andyzhao on 2017/5/2.
  */
+@Api(description = "文章类别，与Essay接口配合使用")
 @RestController
 @RequestMapping("/api/essaytype")
 public class EssayTypeController {
@@ -102,7 +104,7 @@ public class EssayTypeController {
         pageResultVO.setLength(essayTypeVO.getLength());
         pageResultVO.setOrderColumnName(essayTypeVO.getOrderColumnName());
         pageResultVO.setOrderDir(essayTypeVO.getOrderDir());
-        pageResultVO.setTotal(count + "");
+        pageResultVO.setTotal(count);
         return pageResultVO;
     }
 }
