@@ -15,8 +15,6 @@ public class BetDetailRecordVO extends SuperVO {
     private String pk_bet;
     @ApiModelProperty(value = "编码", example = "name", hidden = false)
     private String bet_code;
-    @ApiModelProperty(value = "名称", example = "name", hidden = false)
-    private String bet_name;
     @ApiModelProperty(value = "描述", example = "name", hidden = false)
     private String bet_desc;
     @ApiModelProperty(value = "账号，用户pk", example = "name", hidden = false)
@@ -26,9 +24,9 @@ public class BetDetailRecordVO extends SuperVO {
     @ApiModelProperty(value = "下注项目", example = "大big小little单odd双even，数字1-10", hidden = false)
     private String bet_item;
     @ApiModelProperty(value = "下注数量,单位是分（人民币）", example = "1200,12元", hidden = false)
-    private String bet_money;
+    private Integer bet_money;
     @ApiModelProperty(value = "是否中奖", example = "1为中奖,", hidden = false)
-    private String win;
+    private Integer win;
 
     //冗余字段
 //    @ApiModelProperty(required = false, hidden = true)

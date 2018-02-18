@@ -15,8 +15,6 @@ public class CashFlowVO extends SuperVO {
     private String pk_cash;
     @ApiModelProperty(value = "编码", example = "name", hidden = false)
     private String cash_code;
-    @ApiModelProperty(value = "名称", example = "name", hidden = false)
-    private String cash_name;
     @ApiModelProperty(value = "积分记录类型，充值，结账，流水", example = "name", hidden = false)
     private String cash_desc;
     @ApiModelProperty(value = "账号，用户pk", example = "name", hidden = false)

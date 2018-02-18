@@ -17,7 +17,8 @@ public class PeriodAggVO extends SuperVO {
     private Integer total_num;
     @ApiModelProperty(value = "剩余期数", example = "62", hidden = false)
     private Integer rest_num;
-
+    @ApiModelProperty(value = "本期倒计时", example = "102", hidden = false)
+    private Integer rest_second;
     @Override
     public String getPKField() {
         return null;

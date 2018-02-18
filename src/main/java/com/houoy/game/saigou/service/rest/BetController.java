@@ -91,7 +91,7 @@ public class BetController extends BaseController<BetDetailRecordVO, BetService>
     })
     @GetMapping(value = "retrieveWin")
     public PageResultVO retrieveWin(@RequestBody BetDetailRecordVO vo, HttpServletRequest request) {
-        vo.setWin("1");
+        vo.setWin(1);
         return super.retrieve(vo, request);
     }
 
