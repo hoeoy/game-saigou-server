@@ -80,7 +80,7 @@ public class BetController extends BaseController<BetDetailRecordVO, BetService>
     @ApiImplicitParams({
             @ApiImplicitParam(name = "vo", value = "下注明细信息", required = true, paramType = "body", dataType = "BetDetailRecordVO")
     })
-    @GetMapping(value = "retrieve")
+    @PostMapping(value = "retrieve")
     public PageResultVO retrieve(@RequestBody BetDetailRecordVO vo, HttpServletRequest request) {
         return super.retrieve(vo, request);
     }
@@ -89,7 +89,7 @@ public class BetController extends BaseController<BetDetailRecordVO, BetService>
     @ApiImplicitParams({
             @ApiImplicitParam(name = "vo", value = "中奖明细信息", required = true, paramType = "body", dataType = "BetDetailRecordVO")
     })
-    @GetMapping(value = "retrieveWin")
+    @PostMapping(value = "retrieveWin")
     public PageResultVO retrieveWin(@RequestBody BetDetailRecordVO vo, HttpServletRequest request) {
         vo.setWin(1);
         return super.retrieve(vo, request);

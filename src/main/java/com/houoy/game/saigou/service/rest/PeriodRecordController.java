@@ -3,6 +3,8 @@ package com.houoy.game.saigou.service.rest;
 import com.houoy.common.vo.PageResultVO;
 import com.houoy.common.vo.RequestResultVO;
 import com.houoy.common.web.BaseController;
+import com.houoy.game.saigou.core.Period;
+import com.houoy.game.saigou.core.SaigouTimer;
 import com.houoy.game.saigou.service.PeriodService;
 import com.houoy.game.saigou.vo.PeriodAggVO;
 import com.houoy.game.saigou.vo.PeriodRecordVO;
@@ -31,6 +33,9 @@ import java.util.List;
 public class PeriodRecordController extends BaseController<PeriodRecordVO, PeriodService> {
     private static final Log logger = LogFactory.getLog(PeriodRecordController.class);
 
+    @Autowired
+    private SaigouTimer saigouTimer;
+
     @Override
     @Autowired
     protected void setService(PeriodService _service) {
@@ -38,9 +43,9 @@ public class PeriodRecordController extends BaseController<PeriodRecordVO, Perio
     }
 
     @Override
-    @ApiOperation(value = "增加开奖记录(保存)")
+    @ApiOperation(value = "增加开奖记录(保存)", hidden = true)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "vo", value = "开奖记录信息", required = true, paramType = "body", dataType = "List<PeriodRecordVO>")
+            @ApiImplicitParam(name = "vo", value = "开奖记录信息", required = true, paramType = "body", dataType = "PeriodRecordVO")
     })
     @PostMapping("/save")
     public RequestResultVO add(@RequestBody PeriodRecordVO vo) {
@@ -52,7 +57,7 @@ public class PeriodRecordController extends BaseController<PeriodRecordVO, Perio
     @ApiImplicitParams({
             @ApiImplicitParam(name = "vo", value = "开奖记录明细信息", required = true, paramType = "body", dataType = "PeriodRecordVO")
     })
-    @GetMapping(value = "retrieve")
+    @PostMapping(value = "retrieve")
     public PageResultVO retrieve(@RequestBody PeriodRecordVO vo, HttpServletRequest request) {
         return super.retrieve(vo, request);
     }
@@ -60,10 +65,8 @@ public class PeriodRecordController extends BaseController<PeriodRecordVO, Perio
     @ApiOperation(value = "今日赛事状态汇总")
     @GetMapping(value = "retrieveSummery")
     public Result<PeriodAggVO> retrieveSummery() {
-        PeriodAggVO periodAggVO = new PeriodAggVO();
-        periodAggVO.setCurrent_num(151);
-        periodAggVO.setRest_num(62);
-        periodAggVO.setTotal_num(216);
+        Period period = saigouTimer.getPeriod();
+        PeriodAggVO periodAggVO = period.getPeriodAggVO();
         Result<PeriodAggVO> result = new Result();
         result.setContent(periodAggVO);
         result.setCode(ResultCode.SUCCESS);
@@ -71,7 +74,7 @@ public class PeriodRecordController extends BaseController<PeriodRecordVO, Perio
         return result;
     }
 
-    @ApiOperation(value = "根据Pk值删除", notes = "根据Pk值删除")
+    @ApiOperation(value = "根据Pk值删除", notes = "根据Pk值删除", hidden = true)
     @ApiImplicitParam(name = "pks", value = "用户的pk列表", required = true, dataType = "List", paramType = "body")
     @PostMapping("delete")
     @Override

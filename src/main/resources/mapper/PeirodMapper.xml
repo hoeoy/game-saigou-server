@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.houoy.game.saigou.dao.PeriodMapper">
+    <sql id="ifWhere">
+        <if test="period_code!=null and period_code!=''">
+            and period_code like "%${period_code}%"
+        </if>
+        <if test="period_desc != null and period_desc !=''">
+            and period_desc like "%${period_desc}%"
+        </if>
+    </sql>
+    <select id="retrieveByPK" resultType="java.util.Map">
+
+    </select>
+    <select id="retrieveByCode" resultType="com.houoy.game.saigou.vo.PeriodRecordVO" parameterType="string">
+        select * from game_saigou_period
+        where period_code="${period_code}"
+    </select>
+    <select id="retrieveAll" resultType="java.util.Map">
+
+    </select>
+    <select id="retrieveAllCount" resultType="java.lang.Long">
+        select count(*) from game_saigou_period
+        <where>
+            <include refid="ifWhere"/>
+        </where>
+    </select>
+    <select id="retrieveAllWithPage" resultType="com.houoy.game.saigou.vo.PeriodRecordVO">
+        select * from game_saigou_period
+        <where>
+            <include refid="ifWhere"/>
+        </where>
+        order by
+        ${orderColumnName} ${orderDir}
+        limit
+        #{start},#{length}
+    </select>
+
+    <insert id="saveByVO" parameterType="com.houoy.game.saigou.vo.PeriodRecordVO">
+        insert into game_saigou_period(period_code,period_desc,period,
+        period_start_time,period_block_time,period_stop_time,period_show_time)
+        values
+        (#{period_code},#{period_desc},#{period},
+        #{period_start_time},#{period_block_time},#{period_stop_time},#{period_show_time})
+    </insert>
+
+    <update id="updateByVO">
+        update game_saigou_period
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="period_desc != null">period_desc=#{period_desc},</if>
+            <if test="odd_even != null">odd_even=#{odd_even},</if>
+            <if test="little_big != null">little_big=#{little_big},</if>
+            <if test="animation != null">animation=#{animation},</if>
+            <if test="f1 != null">f1=#{f1},</if>
+            <if test="f2 != null">f2=#{f2},</if>
+            <if test="f3 != null">f3=#{f3},</if>
+            <if test="f4 != null">f4=#{f4},</if>
+            <if test="f5 != null">f5=#{f5},</if>
+            <if test="f6 != null">f6=#{f6},</if>
+            <if test="f7 != null">f7=#{f7},</if>
+            <if test="f8 != null">f8=#{f8},</if>
+            <if test="f9 != null">f9=#{f9},</if>
+            <if test="f10 != null">f10=#{f10},</if>
+        </trim>
+
+        where pk_period=#{pk_period}
+    </update>
+
+    <delete id="deleteByPK">
+        delete from game_saigou_period where pk_period=#{pk_period}
+    </delete>
+
+    <delete id="deleteByPKs" parameterType="java.util.List">
+        delete from game_saigou_period where
+        <foreach collection="list" item="item" index="index"
+                 open="(" separator="or" close=")">
+            pk_period = #{item}
+        </foreach>
+    </delete>
+</mapper>
+

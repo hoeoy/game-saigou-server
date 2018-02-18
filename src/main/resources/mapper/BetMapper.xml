@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.houoy.game.saigou.dao.BetMapper">
+    <sql id="ifWhere">
+        <if test="bet_code!=null and bet_code!=''">
+            and bet_code like "%${bet_code}%"
+        </if>
+        <if test="bet_desc != null and bet_desc !=''">
+            and bet_desc like "%${bet_desc}%"
+        </if>
+    </sql>
+    <select id="retrieveByPK" resultType="java.util.Map">
+
+    </select>
+    <select id="retrieveAll" resultType="java.util.Map">
+
+    </select>
+    <select id="retrieveAllCount" resultType="java.lang.Long">
+        select count(*) from game_saigou_bet
+        <where>
+            <include refid="ifWhere"/>
+        </where>
+    </select>
+    <select id="retrieveAllWithPage" resultType="com.houoy.game.saigou.vo.BetDetailRecordVO">
+        select * from game_saigou_bet
+        <where>
+            <include refid="ifWhere"/>
+        </where>
+        order by
+        ${orderColumnName} ${orderDir}
+        limit
+        #{start},#{length}
+    </select>
+
+    <insert id="saveByVO" parameterType="com.houoy.game.saigou.vo.BetDetailRecordVO">
+        insert into game_saigou_bet(bet_code,bet_desc,pk_user,
+        pk_period,bet_item,bet_money)
+        values
+        (#{bet_code},#{bet_desc},#{pk_user},
+        #{pk_period},#{bet_item},#{bet_money})
+    </insert>
+
+    <update id="updateByVO">
+        update game_saigou_bet
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bet_code != null">bet_code=#{bet_code},</if>
+            <if test="bet_desc != null">bet_desc=#{bet_desc},</if>
+            <if test="win != null">win=#{win}</if>
+        </trim>
+
+        where pk_bet=#{pk_bet}
+    </update>
+
+    <delete id="deleteByPK">
+        delete from game_saigou_bet where pk_bet=#{pk_bet}
+    </delete>
+
+    <delete id="deleteByPKs" parameterType="java.util.List">
+        delete from game_saigou_bet where
+        <foreach collection="list" item="item" index="index"
+                 open="(" separator="or" close=")">
+            pk_bet = #{item}
+        </foreach>
+    </delete>
+</mapper>
+

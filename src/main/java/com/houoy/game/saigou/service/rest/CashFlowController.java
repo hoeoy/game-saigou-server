@@ -39,7 +39,7 @@ public class CashFlowController extends BaseController<CashFlowVO, CashFlowServi
     @Override
     @ApiOperation(value = "增加积分(保存)")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "vo", value = "积分信息", required = true, paramType = "body", dataType = "List<CashFlowVO>")
+            @ApiImplicitParam(name = "vo", value = "积分信息", required = true, paramType = "body", dataType = "CashFlowVO")
     })
     @PostMapping("/save")
     public RequestResultVO add(@RequestBody CashFlowVO vo) {

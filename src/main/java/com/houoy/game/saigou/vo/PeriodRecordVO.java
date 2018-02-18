@@ -13,22 +13,27 @@ import lombok.NoArgsConstructor;
 public class PeriodRecordVO extends SuperVO {
     @ApiModelProperty(required = false, hidden = true)
     private String pk_period;
-    @ApiModelProperty(value = "编码", example = "name", hidden = false)
+    @ApiModelProperty(value = "编码", example = "B20180213120", hidden = false)
     private String period_code;
-    @ApiModelProperty(value = "描述", example = "name", hidden = false)
+    @ApiModelProperty(value = "描述", example = "B20180213120", hidden = false)
     private String period_desc;
     @ApiModelProperty(value = "期数", example = "20180213120", hidden = false)
-    private Integer period;
+    private String period;
     @ApiModelProperty(value = "开盘时间", example = "2018-02-14 13:35:00", hidden = false)
     private String period_start_time;
     @ApiModelProperty(value = "封盘时间", example = "2018-02-14 13:35:00", hidden = false)
     private String period_block_time;
     @ApiModelProperty(value = "开奖时间", example = "2018-02-14 13:35:00", hidden = false)
+    private String period_show_time;
+    @ApiModelProperty(value = "本期结束时间", example = "2018-02-14 13:35:00", hidden = false)
     private String period_stop_time;
-    @ApiModelProperty(value = "第一名的号码是单数还是双数,1是单数，0是双数", example = "1", hidden = false)
+    @ApiModelProperty(value = "第一名的号码是单数还是双数,1是单数，2是双数", example = "2", hidden = false)
     private Integer odd_even;
-    @ApiModelProperty(value = "第一名的号码是小还是大,1是大，0是小", example = "1", hidden = false)
+    @ApiModelProperty(value = "第一名的号码是小还是大,1是小，2是大", example = "2", hidden = false)
     private Integer little_big;
+    //格式参考liveVO
+    @ApiModelProperty(value = "描述动画的json", example = "{}", hidden = false)
+    private String animation;
     @ApiModelProperty(value = "第1名的号码", example = "10", hidden = false)
     private Integer f1;
     @ApiModelProperty(value = "第2名的号码", example = "2", hidden = false)

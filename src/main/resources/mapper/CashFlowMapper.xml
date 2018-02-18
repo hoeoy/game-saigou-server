@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.houoy.game.saigou.dao.CashFlowMapper">
+    <sql id="ifWhere">
+        <if test="cash_code!=null and cash_code!=''">
+            and cash_code like "%${cash_code}%"
+        </if>
+        <if test="cash_type != null and cash_type !=''">
+            and cash_type like "%${cash_type}%"
+        </if>
+    </sql>
+    <select id="retrieveByPK" resultType="java.util.Map">
+
+    </select>
+    <select id="retrieveAll" resultType="java.util.Map">
+
+    </select>
+    <select id="retrieveAllCount" resultType="java.lang.Long">
+        select count(*) from game_saigou_cash
+        <where>
+            <include refid="ifWhere"/>
+        </where>
+    </select>
+    <select id="retrieveAllWithPage" resultType="com.houoy.game.saigou.vo.CashFlowVO">
+        select * from game_saigou_cash
+        <where>
+            <include refid="ifWhere"/>
+        </where>
+        order by
+        ${orderColumnName} ${orderDir}
+        limit
+        #{start},#{length}
+    </select>
+
+    <insert id="saveByVO" parameterType="com.houoy.game.saigou.vo.CashFlowVO">
+        insert into game_saigou_cash(cash_code,cash_type,pk_user,
+        pk_period,pk_bet,money,
+        total_money_before,total_money_after)
+        values
+        (#{cash_code},#{cash_type},#{pk_user},
+        #{pk_period},#{pk_bet},#{money},
+        #{total_money_before},#{total_money_after})
+    </insert>
+
+    <update id="updateByVO">
+        update game_saigou_cash
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cash_code != null">cash_code=#{cash_code},</if>
+            <if test="cash_type != null">cash_type=#{cash_type},</if>
+        </trim>
+
+        where pk_cash=#{pk_cash}
+    </update>
+
+    <delete id="deleteByPK">
+        delete from game_saigou_cash where pk_cash=#{pk_cash}
+    </delete>
+
+    <delete id="deleteByPKs" parameterType="java.util.List">
+        delete from game_saigou_cash where
+        <foreach collection="list" item="item" index="index"
+                 open="(" separator="or" close=")">
+            pk_cash = #{item}
+        </foreach>
+    </delete>
+</mapper>
+

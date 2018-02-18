@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * 直播动画vo
  */
@@ -12,25 +14,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LiveVO extends SuperVO {
     @ApiModelProperty(value = "1号马每秒钟的位置数组", example = "[50,100,150,200,250,300,350,400,500,650]", hidden = false)
-    private Integer m1;
+    private List<Integer> m1;
     @ApiModelProperty(value = "2号马每秒钟的位置数组", example = "[50,100,150,200,250,300,350,400,500,650]", hidden = false)
-    private Integer m2;
+    private List<Integer> m2;
     @ApiModelProperty(value = "3号马每秒钟的位置数组", example = "[50,100,150,200,250,300,350,400,500,650]", hidden = false)
-    private Integer m3;
+    private List<Integer> m3;
     @ApiModelProperty(value = "4号马每秒钟的位置数组", example = "[50,100,150,200,250,300,350,400,500,650]", hidden = false)
-    private Integer m4;
+    private List<Integer> m4;
     @ApiModelProperty(value = "5号马每秒钟的位置数组", example = "[50,100,150,200,250,300,350,400,500,650]", hidden = false)
-    private Integer m5;
+    private List<Integer> m5;
     @ApiModelProperty(value = "6号马每秒钟的位置数组", example = "[50,100,150,200,250,300,350,400,500,650]", hidden = false)
-    private Integer m6;
+    private List<Integer> m6;
     @ApiModelProperty(value = "7号马每秒钟的位置数组", example = "[50,100,150,200,250,300,350,400,500,650]", hidden = false)
-    private Integer m7;
+    private List<Integer> m7;
     @ApiModelProperty(value = "8号马每秒钟的位置数组", example = "[50,100,150,200,250,300,350,400,500,650]", hidden = false)
-    private Integer m8;
+    private List<Integer> m8;
     @ApiModelProperty(value = "9号马每秒钟的位置数组", example = "[50,100,150,200,250,300,350,400,500,650]", hidden = false)
-    private Integer m9;
+    private List<Integer> m9;
     @ApiModelProperty(value = "10号马每秒钟的位置数组", example = "[50,100,150,200,250,300,350,400,500,650]", hidden = false)
-    private Integer m10;
+    private List<Integer> m10;
 
     @Override
     public String getPKField() {

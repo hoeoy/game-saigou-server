@@ -11,14 +11,23 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class PeriodAggVO extends SuperVO {
-    @ApiModelProperty(value = "当前开奖期数", example = "154", hidden = false)
+    @ApiModelProperty(value = "当前时间所在开奖期", example = "154", hidden = false)
     private Integer current_num;
     @ApiModelProperty(value = "今日总共有多少期", example = "216", hidden = false)
     private Integer total_num;
     @ApiModelProperty(value = "剩余期数", example = "62", hidden = false)
     private Integer rest_num;
-    @ApiModelProperty(value = "本期倒计时", example = "102", hidden = false)
+    @ApiModelProperty(value = "当前时间所在开奖期倒计时", example = "102", hidden = false)
     private Integer rest_second;
+    @ApiModelProperty(value = "当前时间所在开奖期的开盘时间", example = "2018-02-14 13:35:00", hidden = false)
+    private String period_start_time;
+    @ApiModelProperty(value = "当前时间所在开奖期的封盘时间", example = "2018-02-14 13:35:00", hidden = false)
+    private String period_block_time;
+    @ApiModelProperty(value = "当前时间所在开奖期的开奖时间", example = "2018-02-14 13:35:00", hidden = false)
+    private String period_show_time;
+    @ApiModelProperty(value = "当前时间所在开奖期的开奖时间", example = "2018-02-14 13:35:00", hidden = false)
+    private String period_stop_time;
+
     @Override
     public String getPKField() {
         return null;
