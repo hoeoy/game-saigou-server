@@ -31,7 +31,7 @@ public class BetDetailRecordVO extends SuperVO {
     //冗余字段
 //    @ApiModelProperty(required = false, hidden = true)
     @ApiModelProperty(value = "用户名称", example = "name", hidden = false)
-    private String user_name;
+    private String user_code;
     @ApiModelProperty(value = "期数编码", example = "name", hidden = false)
     private String period_code;
 

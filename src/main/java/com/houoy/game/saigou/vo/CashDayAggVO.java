@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CashDayAggVO extends SuperVO {
-    @ApiModelProperty(value = "日报表pk", example = "name", hidden = false)
-    private String pk_cash_agg;
     @ApiModelProperty(value = "账号，用户pk", example = "name", hidden = false)
     private String pk_user;
     @ApiModelProperty(value = "当前总积分", example = "name", hidden = false)

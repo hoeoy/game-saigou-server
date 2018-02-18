@@ -16,26 +16,29 @@ public class CashFlowVO extends SuperVO {
     @ApiModelProperty(value = "编码", example = "name", hidden = false)
     private String cash_code;
     @ApiModelProperty(value = "积分记录类型，充值，结账，流水", example = "name", hidden = false)
-    private String cash_desc;
+    private String cash_type;
     @ApiModelProperty(value = "账号，用户pk", example = "name", hidden = false)
     private String pk_user;
     @ApiModelProperty(value = "期数pk", example = "name", hidden = false)
     private String pk_period;
-    @ApiModelProperty(value = "下注项目", example = "大big小little单odd双even，数字1-10", hidden = false)
-    private String bet_item;
+    @ApiModelProperty(value = "下注项目pk", example = "主键", hidden = false)
+    private String pk_bet;
     @ApiModelProperty(value = "流水金额，单位：分（人民币）", example = "12", hidden = false)
-    private Integer number;
+    private Integer money;
+    @ApiModelProperty(value = "处理流水金额前总额", example = "name", hidden = false)
+    private Integer total_money_before;
+    @ApiModelProperty(value = "处理流水金额后总额", example = "name", hidden = false)
+    private Integer total_money_after;
 
     //冗余字段
 //    @ApiModelProperty(required = false, hidden = true)
     @ApiModelProperty(value = "用户名称", example = "name", hidden = false)
-    private String user_name;
+    private String user_code;
     @ApiModelProperty(value = "期数编码", example = "name", hidden = false)
     private String period_code;
-    @ApiModelProperty(value = "处理流水金额前总额", example = "name", hidden = false)
-    private Integer total_before;
-    @ApiModelProperty(value = "处理流水金额后总额", example = "name", hidden = false)
-    private Integer total_after;
+    @ApiModelProperty(value = "下注项目", example = "大big小little单odd双even，数字1-10", hidden = false)
+    private String bet_item;
+
 
     @Override
     public String getPKField() {

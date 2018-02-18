@@ -32,8 +32,8 @@ public class SaigouTimer {
     public void timer() {
         try {
             Period period = getCurrentPeriod();
-            if (last == null) {
-                //更新peiod
+            if (last == null) {//刚刚启动程序
+                //更新period
             } else {
 
             }

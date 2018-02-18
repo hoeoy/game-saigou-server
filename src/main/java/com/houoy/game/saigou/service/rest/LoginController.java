@@ -50,7 +50,7 @@ public class LoginController {
         List<UserVO> users = loginService.retrieveByCodeAndPwd(user_code, password);
 //        List<UserVO> users = new ArrayList<>();
 //        UserVO u = new UserVO();
-//        u.setUser_name("admin");
+//        u.setuser_code("admin");
 //        u.setUser_code("admin");
 //        u.setUser_password("1");
 //        users.add(u);
