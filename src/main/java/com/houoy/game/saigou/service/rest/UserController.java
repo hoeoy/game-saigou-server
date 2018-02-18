@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -41,7 +42,13 @@ public class UserController {
             if (userVO.getPk_user() != null) {//如果前端传递过来pk,则判断为更新操作
                 num = userService.updateUserByVO(userVO);
             } else {
-                num = userService.saveUserByVO(userVO);
+                if (StringUtils.isEmpty(userVO.getDef1())) {
+                    resultVO.setSuccess(false);
+                    resultVO.setMsg("保存失败,用户积分不能为null");
+                    return resultVO;
+                } else {
+                    num = userService.saveUserByVO(userVO);
+                }
             }
 
             if (num >= 1) {

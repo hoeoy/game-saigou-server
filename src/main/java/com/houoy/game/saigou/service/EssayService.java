@@ -6,7 +6,7 @@ import com.houoy.game.saigou.vo.EssayVO;
 /**
  * Created by andyzhao on 2017-02-20.
  */
-public interface EssayService extends BaseService<EssayVO> {
+public interface EssayService<T extends EssayVO> extends BaseService<T> {
 //
 //    EssayVO save(EssayVO essayVO);
 //

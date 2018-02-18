@@ -12,5 +12,8 @@ import java.util.List;
  */
 @Mapper
 public interface PeriodMapper extends BaseMapper<PeriodRecordVO> {
-    List<PeriodRecordVO> retrieveByCode(@Param(value="period_code") String period_code) throws RuntimeException;
+    List<PeriodRecordVO> retrieveByCode(@Param(value = "period_code") String period_code) throws RuntimeException;
+
+    @Override
+    List<PeriodRecordVO> retrieveByPK(@Param("pk") String pk) throws RuntimeException;
 }

@@ -42,13 +42,18 @@ public class SaigouTimer {
     public void timer() {
         try {
             period = getCurrentPeriod();
-            if (last == null) {//刚刚启动程序
-                //判断是否有本期数据
-                String periodStr = getPeriodStr(period);
-                PeriodRecordVO recordVO = periodService.retrieveByCode(SaigouConstant.preCode + periodStr);
-                if (recordVO == null) {
-                    //新增
-                    savePeriodRecord(period);
+            if (last == null) {//刚刚启动程序,或者停业时间
+                if (period.getPeriodAggVO() == null || period.getTimeType()==TimeType.sleep) {//停业时间
+                    //什么也不做
+                } else {
+                    //判断是否有本期数据
+                    String periodStr = getPeriodStr(period);
+                    //数据库中按照code查找
+                    PeriodRecordVO recordVO = periodService.retrieveByCode(SaigouConstant.preCode + periodStr);
+                    if (recordVO == null) {
+                        //新增
+                        savePeriodRecord(period);
+                    }
                 }
             } else {
                 if (last.getTimeType() == period.getTimeType()) {//两次状态相等，没有进行状态切换，不做业务处理
@@ -63,8 +68,8 @@ public class SaigouTimer {
                             break;
                         case run_stop://封盘
                             //产生本期的名次，动画参数 更新数据
-                            String periodStr = getPeriodStr(period);
-                            PeriodRecordVO periodRecordVO = periodService.retrieveByCode(SaigouConstant.preCode + periodStr);
+                            String code = period.getPeriodAggVO().getPeriod_code();
+                            PeriodRecordVO periodRecordVO = periodService.retrieveByCode(code);
                             if (periodRecordVO != null) {
                                 //更新名次和动画属性
 //                                LiveVO liveVO = new LiveVO();
@@ -109,24 +114,30 @@ public class SaigouTimer {
         }
     }
 
-    public void savePeriodRecord(Period period) {
+    public String savePeriodRecord(Period period) {
         PeriodAggVO currentPeriodAggVO = period.getPeriodAggVO();
-        String periodStr = getPeriodStr(period);
-        String code = SaigouConstant.preCode + periodStr;
-
         PeriodRecordVO periodRecordVO = new PeriodRecordVO();
-        periodRecordVO.setPeriod_code(code);
-        periodRecordVO.setPeriod_desc(code);
-        periodRecordVO.setPeriod(periodStr);
+        periodRecordVO.setPeriod_code(currentPeriodAggVO.getPeriod_code());
+        periodRecordVO.setPeriod_desc(currentPeriodAggVO.getPeriod_code());
+        periodRecordVO.setPeriod(currentPeriodAggVO.getPeriod_code().substring(1));
         periodRecordVO.setPeriod_start_time(currentPeriodAggVO.getPeriod_start_time());
         periodRecordVO.setPeriod_block_time(currentPeriodAggVO.getPeriod_block_time());
         periodRecordVO.setPeriod_show_time(currentPeriodAggVO.getPeriod_show_time());
         periodRecordVO.setPeriod_stop_time(currentPeriodAggVO.getPeriod_stop_time());
-        periodService.saveByVO(periodRecordVO);
+        Integer pk = periodService.saveByVO(periodRecordVO);
+        return pk + "";
     }
 
     private String getPeriodStr(Period period) {
+        if (period == null) {
+            return null;
+        }
         PeriodAggVO currentPeriodAggVO = period.getPeriodAggVO();
+
+        if (currentPeriodAggVO == null) {
+            return null;
+        }
+
         SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyyMMdd");
         String periodStr = datetimeFormat.format(new Date()) + currentPeriodAggVO.getCurrent_num();
         return periodStr;
@@ -176,25 +187,29 @@ public class SaigouTimer {
         Long current_rest = durationMillSecond - current_past;//本期还剩多少毫秒
         Long rest_second = current_rest / 1000;//本期还剩多少秒
 
-        PeriodAggVO CurrentPeriodAggVO = new PeriodAggVO();
-        CurrentPeriodAggVO.setCurrent_num(current_num.intValue());
-        CurrentPeriodAggVO.setRest_second(rest_second.intValue());
+        PeriodAggVO currentPeriodAggVO = new PeriodAggVO();
+        currentPeriodAggVO.setCurrent_num(current_num.intValue());
+        currentPeriodAggVO.setRest_second(rest_second.intValue());
 
         Long total_num = (endTime - startTime) / durationMillSecond;//今日总共有多少期
-        CurrentPeriodAggVO.setTotal_num(total_num.intValue());
-        Long rest_num = total_num - CurrentPeriodAggVO.getCurrent_num();
-        CurrentPeriodAggVO.setRest_num(rest_num.intValue());
+        currentPeriodAggVO.setTotal_num(total_num.intValue());
+        Long rest_num = total_num - currentPeriodAggVO.getCurrent_num();
+        currentPeriodAggVO.setRest_num(rest_num.intValue());
 
         Date period_start_time = new Date(current - current_past);//当前时间 减去 已经经历了多少毫秒
         Date period_stop_time = new Date(period_start_time.getTime() + durationMillSecond);//本期结束时间
         Date period_block_time = new Date(period_stop_time.getTime() - stopMillSecond);//本期封盘时间
         Date period_show_time = new Date(period_stop_time.getTime() - showMillSecond);//本期动画时间
 
-        CurrentPeriodAggVO.setPeriod_start_time(DateUtils.formatDatetime(period_start_time));
-        CurrentPeriodAggVO.setPeriod_stop_time(DateUtils.formatDatetime(period_stop_time));
-        CurrentPeriodAggVO.setPeriod_block_time(DateUtils.formatDatetime(period_block_time));
-        CurrentPeriodAggVO.setPeriod_show_time(DateUtils.formatDatetime(period_show_time));
-        return CurrentPeriodAggVO;
+        currentPeriodAggVO.setPeriod_start_time(DateUtils.formatDatetime(period_start_time));
+        currentPeriodAggVO.setPeriod_stop_time(DateUtils.formatDatetime(period_stop_time));
+        currentPeriodAggVO.setPeriod_block_time(DateUtils.formatDatetime(period_block_time));
+        currentPeriodAggVO.setPeriod_show_time(DateUtils.formatDatetime(period_show_time));
+
+        SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyyMMdd");
+        String periodStr = datetimeFormat.format(new Date()) + currentPeriodAggVO.getCurrent_num();
+        currentPeriodAggVO.setPeriod_code(SaigouConstant.preCode + periodStr);
+        return currentPeriodAggVO;
     }
 
     public static void main(String[] args) throws ParseException {

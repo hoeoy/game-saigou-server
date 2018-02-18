@@ -6,6 +6,6 @@ import com.houoy.game.saigou.vo.BetDetailRecordVO;
 
 import java.util.List;
 
-public interface BetService extends BaseService {
+public interface BetService<T extends BetDetailRecordVO> extends BaseService<T> {
 
 }

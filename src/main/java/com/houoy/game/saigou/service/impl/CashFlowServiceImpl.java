@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("cashFlowService")
-public class CashFlowServiceImpl extends BaseServiceImpl<CashFlowMapper, CashFlowVO> implements CashFlowService {
+public class CashFlowServiceImpl extends BaseServiceImpl<CashFlowMapper, CashFlowVO> implements CashFlowService<CashFlowVO> {
 
     @Override
     @Autowired

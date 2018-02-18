@@ -9,6 +9,8 @@ public interface UserService {
 
     Long retrieveAllCount(UserVO vo) throws RuntimeException;
 
+    UserVO retrieveByPk(String pk);
+
     Integer saveUserByVO(UserVO vo);
 
     Integer updateUserByVO(UserVO vo);

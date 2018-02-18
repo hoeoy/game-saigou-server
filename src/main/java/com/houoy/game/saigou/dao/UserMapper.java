@@ -2,6 +2,7 @@ package com.houoy.game.saigou.dao;
 
 import com.houoy.common.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,7 @@ import java.util.Map;
 @Mapper
 public interface UserMapper {
     //select:单表
-    List<Map> retrieveByPK(String pk) throws RuntimeException;
+    List<UserVO> retrieveByPK(@Param("pk") String pk) throws RuntimeException;
 
     List<Map> retrieveAll() throws RuntimeException;
 

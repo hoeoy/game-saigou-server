@@ -9,6 +9,6 @@ import java.util.List;
 /**
  * Created by andyzhao on 2017-02-20.
  */
-public interface EssayTypeService extends BaseService<EssayTypeVO> {
-    List<EssayTypeVO> retrieveByParentPK(List<String> pks);
+public interface EssayTypeService<T extends EssayTypeVO> extends BaseService<T> {
+    List<T> retrieveByParentPK(List<String> pks);
 }

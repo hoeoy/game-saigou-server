@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Service("essayService")
 @Transactional
-public class EssayServiceImpl implements EssayService {
+public class EssayServiceImpl implements EssayService<EssayVO> {
     @Autowired
     private EssayMapper essayMapper;
 

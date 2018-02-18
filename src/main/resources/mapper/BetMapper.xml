@@ -2,9 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.houoy.game.saigou.dao.BetMapper">
     <sql id="ifWhere">
-        <if test="bet_code!=null and bet_code!=''">
-            and bet_code like "%${bet_code}%"
-        </if>
         <if test="bet_desc != null and bet_desc !=''">
             and bet_desc like "%${bet_desc}%"
         </if>
@@ -33,17 +30,16 @@
     </select>
 
     <insert id="saveByVO" parameterType="com.houoy.game.saigou.vo.BetDetailRecordVO">
-        insert into game_saigou_bet(bet_code,bet_desc,pk_user,
+        insert into game_saigou_bet(bet_desc,pk_user,
         pk_period,bet_item,bet_money)
         values
-        (#{bet_code},#{bet_desc},#{pk_user},
+        (#{bet_desc},#{pk_user},
         #{pk_period},#{bet_item},#{bet_money})
     </insert>
 
     <update id="updateByVO">
         update game_saigou_bet
         <trim prefix="SET" suffixOverrides=",">
-            <if test="bet_code != null">bet_code=#{bet_code},</if>
             <if test="bet_desc != null">bet_desc=#{bet_desc},</if>
             <if test="win != null">win=#{win}</if>
         </trim>

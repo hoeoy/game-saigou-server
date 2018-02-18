@@ -12,7 +12,10 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -39,7 +42,63 @@ public class BetController extends BaseController<BetDetailRecordVO, BetService>
     })
     @PostMapping("/save")
     public RequestResultVO add(@RequestBody BetDetailRecordVO vo) {
-        return super.add(vo);
+        RequestResultVO resultVO = new RequestResultVO();
+        if (vo != null) {
+            if (vo.getBet_money() == null || vo.getBet_money() < 0) {
+                resultVO.setSuccess(Boolean.valueOf(false));
+                resultVO.setMsg("保存失败，请输入下注金额");
+                return resultVO;
+            }
+
+            if (vo.getBet_item() == null) {
+                resultVO.setSuccess(Boolean.valueOf(false));
+                resultVO.setMsg("保存失败,请输入下注项目");
+                return resultVO;
+            }
+
+            if (vo.getPk_period() == null) {
+                resultVO.setSuccess(Boolean.valueOf(false));
+                resultVO.setMsg("保存失败,请输入属于哪一开奖周期pk_period");
+                return resultVO;
+            }
+
+            if (vo.getPk_user() == null) {
+                resultVO.setSuccess(Boolean.valueOf(false));
+                resultVO.setMsg("保存失败,请输入用户pk_user");
+                return resultVO;
+            }
+
+            Integer num = service.saveByVO(vo);
+            if (num == -2) {
+                resultVO.setSuccess(Boolean.valueOf(false));
+                resultVO.setMsg("保存失败，用户积分不足，请充值");
+                return resultVO;
+            } else if (num == -3) {
+                resultVO.setSuccess(Boolean.valueOf(false));
+                resultVO.setMsg("保存失败，找不到此用户");
+                return resultVO;
+            } else if (num == -4) {
+                resultVO.setSuccess(Boolean.valueOf(false));
+                resultVO.setMsg("保存失败，当前时间不可以下注");
+                return resultVO;
+            } else  if (num == -5) {
+                resultVO.setSuccess(Boolean.valueOf(false));
+                resultVO.setMsg("保存失败，只能下注本期，请假差pk_period");
+                return resultVO;
+            } else if (num.intValue() >= 1) {
+                resultVO.setSuccess(Boolean.valueOf(true));
+                resultVO.setMsg("保存成功");
+                resultVO.setResultData(num);
+            } else {
+                resultVO.setSuccess(Boolean.valueOf(false));
+                resultVO.setMsg("保存失败");
+            }
+        } else {
+            resultVO.setSuccess(Boolean.valueOf(false));
+            resultVO.setMsg("参数不可为null");
+        }
+
+        return resultVO;
     }
 
     @ApiOperation(value = "批量下注(保存)")
@@ -95,7 +154,7 @@ public class BetController extends BaseController<BetDetailRecordVO, BetService>
         return super.retrieve(vo, request);
     }
 
-    @ApiOperation(value = "根据Pk值删除", notes = "根据Pk值删除")
+    @ApiOperation(value = "根据Pk值删除", notes = "根据Pk值删除", hidden = true)
     @ApiImplicitParam(name = "pks", value = "用户的pk列表", required = true, dataType = "List", paramType = "body")
     @PostMapping("delete")
     @Override

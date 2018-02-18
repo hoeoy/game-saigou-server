@@ -11,18 +11,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service("periodService")
-public class PeriodServiceImpl extends BaseServiceImpl<PeriodMapper, PeriodRecordVO> implements PeriodService {
+public class PeriodServiceImpl extends BaseServiceImpl<PeriodMapper, PeriodRecordVO> implements PeriodService<PeriodRecordVO> {
 
     @Override
     @Autowired
     protected void setService(PeriodMapper _mapper) {
         mapper = _mapper;
     }
-
-//    @Transactional
-//    public Integer updateByPeriodCodeSuperVO vo) {
-//        return this.mapper.updateByVO(vo);
-//    }
 
     public PeriodRecordVO retrieveByCode(String code) {
         List<PeriodRecordVO> recordVOList = mapper.retrieveByCode(code);

@@ -9,8 +9,9 @@
             and period_desc like "%${period_desc}%"
         </if>
     </sql>
-    <select id="retrieveByPK" resultType="java.util.Map">
-
+    <select id="retrieveByPK" resultType="com.houoy.game.saigou.vo.PeriodRecordVO" parameterType="string">
+        select * from game_saigou_period
+        where pk_period=${pk}
     </select>
     <select id="retrieveByCode" resultType="com.houoy.game.saigou.vo.PeriodRecordVO" parameterType="string">
         select * from game_saigou_period

@@ -12,7 +12,7 @@ import java.util.List;
  * Created by andyzhao on 2017/2/14 0014.
  */
 @Service("essayTypeService")
-public class EssayTypeServiceImpl implements EssayTypeService {
+public class EssayTypeServiceImpl implements EssayTypeService<EssayTypeVO> {
 
     @Autowired
     private EssayTypeMapper essayTypeMapper;

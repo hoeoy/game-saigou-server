@@ -13,17 +13,15 @@ import lombok.NoArgsConstructor;
 public class BetDetailRecordVO extends SuperVO {
     @ApiModelProperty(required = false, hidden = true)
     private String pk_bet;
-    @ApiModelProperty(value = "编码", example = "name", hidden = false)
-    private String bet_code;
     @ApiModelProperty(value = "描述", example = "name", hidden = false)
     private String bet_desc;
-    @ApiModelProperty(value = "账号，用户pk", example = "name", hidden = false)
+    @ApiModelProperty(value = "账号，用户pk", example = "用户pk值：1", hidden = false)
     private String pk_user;
-    @ApiModelProperty(value = "期数pk", example = "name", hidden = false)
+    @ApiModelProperty(value = "期数pk", example = "期数pk值：23", hidden = false)
     private String pk_period;
     @ApiModelProperty(value = "下注项目", example = "大big小little单odd双even，数字1-10", hidden = false)
     private String bet_item;
-    @ApiModelProperty(value = "下注数量,单位是分（人民币）", example = "1200,12元", hidden = false)
+    @ApiModelProperty(value = "下注数量,单位是分（人民币）", example = "1200", hidden = false)
     private Integer bet_money;
     @ApiModelProperty(value = "是否中奖", example = "1为中奖,", hidden = false)
     private Integer win;

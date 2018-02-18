@@ -12,8 +12,9 @@
             and def1 like "%${def1}%"
         </if>
     </sql>
-    <select id="retrieveByPK" resultType="java.util.Map">
-
+    <select id="retrieveByPK" resultType="com.houoy.common.vo.UserVO" parameterType="string">
+        select * from sm_user
+        where pk_user=${pk}
     </select>
     <select id="retrieveAll" resultType="java.util.Map">
         select * from sm_user
