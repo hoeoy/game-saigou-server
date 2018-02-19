@@ -5,6 +5,15 @@
         <if test="cash_type != null and cash_type !=''">
             and cash_type like "%${cash_type}%"
         </if>
+        <if test="pk_user != null and pk_user !=''">
+            and a.pk_user = "${pk_user}"
+        </if>
+        <if test="pk_period != null and pk_period !=''">
+            and a.pk_period = "${pk_period}"
+        </if>
+        <if test="pk_bet != null and pk_bet !=''">
+            and a.pk_bet = "${pk_bet}"
+        </if>
     </sql>
     <select id="retrieveByPK" resultType="java.util.Map">
 
@@ -13,13 +22,19 @@
 
     </select>
     <select id="retrieveAllCount" resultType="java.lang.Long">
-        select count(*) from game_saigou_cash
+        select count(a.pk_cash) from game_saigou_cash a
+        left join game_saigou_period b on a.pk_period = b.pk_period
+        left join sm_user c on a.pk_user = c.pk_user
+        left join game_saigou_bet d on a.pk_bet = d.pk_bet
         <where>
             <include refid="ifWhere"/>
         </where>
     </select>
     <select id="retrieveAllWithPage" resultType="com.houoy.game.saigou.vo.CashFlowVO">
-        select * from game_saigou_cash
+        select a.*,b.period_CODE,c.user_code ,d.bet_item from game_saigou_cash a
+        left join game_saigou_period b on a.pk_period = b.pk_period
+        left join sm_user c on a.pk_user = c.pk_user
+        left join game_saigou_bet d on a.pk_bet = d.pk_bet
         <where>
             <include refid="ifWhere"/>
         </where>
@@ -29,14 +44,38 @@
         #{start},#{length}
     </select>
 
+    <select id="retrieveAllAggCount" resultType="java.lang.Long">
+        SELECT count(DISTINCT(date))
+            FROM game_saigou_cash
+            where pk_user=#{pk_user}
+    </select>
+    <select id="retrieveAllAggWithPage" resultType="com.houoy.game.saigou.vo.CashDayAggVO">
+        SELECT pk_user,date,
+            SUM( CASE
+              WHEN cash_type='win' THEN
+               money
+              END) as win,
+            SUM( CASE
+              WHEN cash_type='bet' THEN
+               money
+              END) as bet
+            FROM game_saigou_cash
+            where pk_user=#{pk_user}
+        group by date
+        order by
+        ${orderColumnName} ${orderDir}
+        limit
+        #{start},#{length}
+    </select>
+
     <insert id="saveByVO" parameterType="com.houoy.game.saigou.vo.CashFlowVO">
         insert into game_saigou_cash(cash_type,pk_user,
         pk_period,pk_bet,money,
-        total_money_before,total_money_after)
+        total_money_before,total_money_after,date)
         values
         (#{cash_type},#{pk_user},
         #{pk_period},#{pk_bet},#{money},
-        #{total_money_before},#{total_money_after})
+        #{total_money_before},#{total_money_after},#{date})
     </insert>
 
     <update id="updateByVO">

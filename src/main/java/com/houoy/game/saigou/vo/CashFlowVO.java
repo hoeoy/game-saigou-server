@@ -24,9 +24,11 @@ public class CashFlowVO extends SuperVO {
     @ApiModelProperty(value = "流水金额，单位：分（人民币）", example = "12", hidden = false)
     private Integer money;
     @ApiModelProperty(value = "处理流水金额前总额", example = "1234", hidden = false)
-    private Integer total_money_before;
+    private Long total_money_before;
     @ApiModelProperty(value = "处理流水金额后总额", example = "1300", hidden = false)
-    private Integer total_money_after;
+    private Long total_money_after;
+    @ApiModelProperty(value = "日期", example = "2018-02-18", hidden = false)
+    private String date;
 
     //冗余字段
 //    @ApiModelProperty(required = false, hidden = true)

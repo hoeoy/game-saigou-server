@@ -14,7 +14,7 @@
     </sql>
     <select id="retrieveByPK" resultType="com.houoy.common.vo.UserVO" parameterType="string">
         select * from sm_user
-        where pk_user=${pk}
+        where pk_user="${pk}"
     </select>
     <select id="retrieveAll" resultType="java.util.Map">
         select * from sm_user
@@ -46,7 +46,8 @@
         update sm_user
         <trim prefix="SET" suffixOverrides=",">
             <if test="user_code != null">user_code=#{user_code},</if>
-            <if test="user_name != null">user_name=#{user_name}</if>
+            <if test="user_name != null">user_name=#{user_name},</if>
+            <if test="def1 != null">def1=#{def1},</if>
         </trim>
 
         where pk_user=#{pk_user}

@@ -3,7 +3,16 @@
 <mapper namespace="com.houoy.game.saigou.dao.BetMapper">
     <sql id="ifWhere">
         <if test="bet_desc != null and bet_desc !=''">
-            and bet_desc like "%${bet_desc}%"
+            and a.bet_desc like "%${bet_desc}%"
+        </if>
+        <if test="win != null and win !=''">
+            and a.win = "${win}"
+        </if>
+        <if test="pk_user != null and pk_user !=''">
+            and a.pk_user = "${pk_user}"
+        </if>
+        <if test="pk_period != null and pk_period !=''">
+            and a.pk_period = "${pk_period}"
         </if>
     </sql>
     <select id="retrieveByPK" resultType="java.util.Map">
@@ -13,13 +22,17 @@
 
     </select>
     <select id="retrieveAllCount" resultType="java.lang.Long">
-        select count(*) from game_saigou_bet
+        select count(a.pk_bet) from game_saigou_bet a
+        left join game_saigou_period b on a.pk_period = b.pk_period
+        left join sm_user c on a.pk_user = c.pk_user
         <where>
             <include refid="ifWhere"/>
         </where>
     </select>
     <select id="retrieveAllWithPage" resultType="com.houoy.game.saigou.vo.BetDetailRecordVO">
-        select * from game_saigou_bet
+        select a.*,b.period_CODE,c.user_code from game_saigou_bet a
+        left join game_saigou_period b on a.pk_period = b.pk_period
+        left join sm_user c on a.pk_user = c.pk_user
         <where>
             <include refid="ifWhere"/>
         </where>
@@ -29,7 +42,8 @@
         #{start},#{length}
     </select>
 
-    <insert id="saveByVO" parameterType="com.houoy.game.saigou.vo.BetDetailRecordVO">
+    <insert id="saveByVO" parameterType="com.houoy.game.saigou.vo.BetDetailRecordVO"
+            useGeneratedKeys="true" keyProperty="pk_bet" keyColumn="pk_bet">
         insert into game_saigou_bet(bet_desc,pk_user,
         pk_period,bet_item,bet_money)
         values

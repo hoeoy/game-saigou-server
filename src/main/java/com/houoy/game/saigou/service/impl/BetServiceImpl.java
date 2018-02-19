@@ -69,27 +69,32 @@ public class BetServiceImpl extends BaseServiceImpl<BetMapper, BetDetailRecordVO
             if (CollectionUtils.isNotEmpty(periodRecordVOs)) {
                 periodRecordVO = periodRecordVOs.get(0);
             }
-            if (periodRecordVO == null || periodRecordVO.getPeriod_code().equals(periodAggVO.getPeriod_code())) {
+            if (periodRecordVO == null || !periodRecordVO.getPeriod_code().equals(periodAggVO.getPeriod_code())) {
                 return -5;//当前时间不可以下注
             }
 
             //增加下注记录
             Integer betResult = this.mapper.saveByVO(vo);
-            //TODO 增加记录时候获取pk值
+            String pk_bet = vo.getPk_bet();
 
-//            //增加积分流水
-//            CashFlowVO cashFlowVO = new CashFlowVO();
-//            cashFlowVO.setCash_type(CashFlowType.bet);
-//            cashFlowVO.setPk_user(vo.getPk_user());
-//            cashFlowVO.setPk_period(vo.getPk_period());
-//
-//            Integer cashResult = cashFlowService.saveByVO(cashFlowVO);
+            //增加积分流水
+            CashFlowVO cashFlowVO = new CashFlowVO();
+            cashFlowVO.setCash_type(CashFlowType.bet);
+            cashFlowVO.setPk_user(vo.getPk_user());
+            cashFlowVO.setPk_period(vo.getPk_period());
+            cashFlowVO.setPk_bet(pk_bet);
+            cashFlowVO.setMoney(-vo.getBet_money());
+            cashFlowVO.setTotal_money_before(total);
+            Long totalAfter = total - vo.getBet_money();
+            cashFlowVO.setTotal_money_after(totalAfter);
+            Integer cashResult = cashFlowService.saveByVO(cashFlowVO);
+
             //增加用户总积分
+            userVO.setDef1(totalAfter + "");
+            Integer userResult = userService.updateUserByVO(userVO);
+            return betResult;
         } else {
             return -3;//找不到此用户
         }
-
-
-        return null;
     }
 }
