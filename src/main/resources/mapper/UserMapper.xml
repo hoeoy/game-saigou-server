@@ -47,6 +47,7 @@
         <trim prefix="SET" suffixOverrides=",">
             <if test="user_code != null">user_code=#{user_code},</if>
             <if test="user_name != null">user_name=#{user_name},</if>
+            <if test="user_password != null">user_password=#{user_password},</if>
             <if test="def1 != null">def1=#{def1},</if>
         </trim>
 

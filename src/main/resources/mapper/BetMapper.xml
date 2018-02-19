@@ -21,6 +21,26 @@
     <select id="retrieveAll" resultType="java.util.Map">
 
     </select>
+    <select id="retrieveSumByPeriodPK" resultType="com.houoy.game.saigou.vo.IncomeVO" parameterType="string">
+         SELECT pk_period,
+        SUM( CASE WHEN bet_item='big' THEN bet_money END) as bet_big,
+        SUM( CASE WHEN bet_item='little' THEN bet_money END) as bet_little,
+        SUM( CASE WHEN bet_item='odd' THEN bet_money END) as bet_odd,
+        SUM( CASE WHEN bet_item='even' THEN bet_money END) as bet_even,
+        SUM( CASE WHEN bet_item='1' THEN bet_money END) as 'bet_1',
+        SUM( CASE WHEN bet_item='2' THEN bet_money END) as 'bet_2',
+        SUM( CASE WHEN bet_item='3' THEN bet_money END) as 'bet_3',
+        SUM( CASE WHEN bet_item='4' THEN bet_money END) as 'bet_4',
+        SUM( CASE WHEN bet_item='5' THEN bet_money END) as 'bet_5',
+        SUM( CASE WHEN bet_item='6' THEN bet_money END) as 'bet_6',
+        SUM( CASE WHEN bet_item='7' THEN bet_money END) as 'bet_7',
+        SUM( CASE WHEN bet_item='8' THEN bet_money END) as 'bet_8',
+        SUM( CASE WHEN bet_item='9' THEN  bet_money END) as 'bet_9',
+        SUM( CASE WHEN bet_item='10' THEN bet_money END) as 'bet_10'
+        FROM game_saigou_bet
+        where pk_period="${pk_period}"
+        group by pk_period
+    </select>
     <select id="retrieveAllCount" resultType="java.lang.Long">
         select count(a.pk_bet) from game_saigou_bet a
         left join game_saigou_period b on a.pk_period = b.pk_period
@@ -41,7 +61,6 @@
         limit
         #{start},#{length}
     </select>
-
     <insert id="saveByVO" parameterType="com.houoy.game.saigou.vo.BetDetailRecordVO"
             useGeneratedKeys="true" keyProperty="pk_bet" keyColumn="pk_bet">
         insert into game_saigou_bet(bet_desc,pk_user,

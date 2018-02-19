@@ -1,5 +1,6 @@
 package com.houoy.game.saigou.service.impl;
 
+import com.houoy.common.utils.Encode;
 import com.houoy.common.vo.UserVO;
 import com.houoy.game.saigou.core.CashFlowType;
 import com.houoy.game.saigou.dao.UserMapper;
@@ -10,6 +11,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -46,32 +48,44 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Integer saveUserByVO(UserVO vo) {
-        vo.setUser_password(UserVO.Default_PassWord);
+        if (StringUtils.isEmpty(vo.getUser_password())) {
+            vo.setUser_password(UserVO.Default_PassWord);//如果没有传密码则设置默认密码
+        }
+
+        vo.setUser_password(Encode.encode(vo.getUser_password()));
         return mapper.saveUserByVO(vo);
     }
 
     @Transactional
     @Override
     public Integer updateUserByVO(UserVO vo) {
-        UserVO last = retrieveByPk(vo.getPk_user());
-        Long total_before = Long.parseLong(last.getDef1());
-        Long total_after = Long.parseLong(vo.getDef1());
-        Long money = total_after - total_before;
-        Integer userResult = mapper.updateUserByVO(vo);
-        //更改积分记录表
-        //增加积分流水
-        CashFlowVO cashFlowVO = new CashFlowVO();
-        if(money>=0){
-            cashFlowVO.setCash_type(CashFlowType.top_up);
-        }else{
-            cashFlowVO.setCash_type(CashFlowType.with_draw);
+        if (!StringUtils.isEmpty(vo.getUser_password())) {
+            vo.setUser_password(Encode.encode(vo.getUser_password()));
         }
-        cashFlowVO.setPk_user(vo.getPk_user());
-        cashFlowVO.setMoney(money.intValue());
-        cashFlowVO.setTotal_money_before(total_before);
-        cashFlowVO.setTotal_money_after(total_after);
-        Integer cashResult = cashFlowService.saveByVO(cashFlowVO);
-        return userResult;
+        if (StringUtils.isEmpty(vo.getDef1())) {//不更新积分
+            Integer userResult = mapper.updateUserByVO(vo);
+            return userResult;
+        } else {//更新积分
+            UserVO last = retrieveByPk(vo.getPk_user());
+            Long total_before = Long.parseLong(last.getDef1());
+            Long total_after = Long.parseLong(vo.getDef1());
+            Long money = total_after - total_before;
+            Integer userResult = mapper.updateUserByVO(vo);
+            //更改积分记录表
+            //增加积分流水
+            CashFlowVO cashFlowVO = new CashFlowVO();
+            if (money >= 0) {
+                cashFlowVO.setCash_type(CashFlowType.top_up);
+            } else {
+                cashFlowVO.setCash_type(CashFlowType.with_draw);
+            }
+            cashFlowVO.setPk_user(vo.getPk_user());
+            cashFlowVO.setMoney(money.intValue());
+            cashFlowVO.setTotal_money_before(total_before);
+            cashFlowVO.setTotal_money_after(total_after);
+            Integer cashResult = cashFlowService.saveByVO(cashFlowVO);
+            return userResult;
+        }
     }
 
     @Override

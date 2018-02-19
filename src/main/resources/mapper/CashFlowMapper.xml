@@ -14,6 +14,9 @@
         <if test="pk_bet != null and pk_bet !=''">
             and a.pk_bet = "${pk_bet}"
         </if>
+        <if test="date != null and date !=''">
+            and a.date = "${date}"
+        </if>
     </sql>
     <select id="retrieveByPK" resultType="java.util.Map">
 

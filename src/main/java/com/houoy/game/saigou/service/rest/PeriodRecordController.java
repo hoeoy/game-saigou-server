@@ -67,6 +67,12 @@ public class PeriodRecordController extends BaseController<PeriodRecordVO, Perio
     public Result<PeriodAggVO> retrieveSummery() {
         Period period = saigouTimer.getPeriod();
         PeriodAggVO periodAggVO = period.getPeriodAggVO();
+
+        if (periodAggVO != null) {//晚上停止营业时间为null
+            PeriodRecordVO vo = service.retrieveByCode(periodAggVO.getPeriod_code());
+            periodAggVO.setPk_period(vo.getPk_period());//设置pk值
+        }
+
         Result<PeriodAggVO> result = new Result();
         result.setContent(periodAggVO);
         result.setCode(ResultCode.SUCCESS);

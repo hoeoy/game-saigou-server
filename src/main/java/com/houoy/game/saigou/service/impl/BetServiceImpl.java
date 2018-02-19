@@ -8,10 +8,7 @@ import com.houoy.game.saigou.service.BetService;
 import com.houoy.game.saigou.service.CashFlowService;
 import com.houoy.game.saigou.service.PeriodService;
 import com.houoy.game.saigou.service.UserService;
-import com.houoy.game.saigou.vo.BetDetailRecordVO;
-import com.houoy.game.saigou.vo.CashFlowVO;
-import com.houoy.game.saigou.vo.PeriodAggVO;
-import com.houoy.game.saigou.vo.PeriodRecordVO;
+import com.houoy.game.saigou.vo.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,5 +93,10 @@ public class BetServiceImpl extends BaseServiceImpl<BetMapper, BetDetailRecordVO
         } else {
             return -3;//找不到此用户
         }
+    }
+
+    @Override
+    public IncomeVO retrieveSumByPeriodPK(String pk_period) {
+        return mapper.retrieveSumByPeriodPK(pk_period);
     }
 }

@@ -5,6 +5,8 @@ import com.houoy.common.vo.JquryDataTablesVO;
 import com.houoy.common.vo.RequestResultVO;
 import com.houoy.common.vo.UserVO;
 import com.houoy.game.saigou.service.UserService;
+import com.houoy.game.saigou.vo.Result;
+import com.houoy.game.saigou.vo.ResultCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -66,7 +68,7 @@ public class UserController {
         return resultVO;
     }
 
-    @ApiOperation(value = "根据Pk值删除", notes = "根据Pk值删除",hidden = true)
+    @ApiOperation(value = "根据Pk值删除", notes = "根据Pk值删除", hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "pks", value = "用户的pk列表", required = true, dataType = "List", paramType = "body")
     })
@@ -86,7 +88,24 @@ public class UserController {
         return resultVO;
     }
 
-    @ApiOperation(value = "分页查询用户")
+    @ApiOperation(value = "根据用户pk查询用户信息,积分字段是def1")
+    @GetMapping(value = "retrieveByPK")
+    public Result<UserVO> retrieveByPK(String pk_user) {
+        UserVO userVO = userService.retrieveByPk(pk_user);
+        Result result = new Result();
+        if (userVO == null) {
+            result.setContent(userVO);
+            result.setMsg("没有找到用户");
+            result.setCode(ResultCode.ERROR_DATA);
+        } else {
+            result.setContent(userVO);
+            result.setMsg("查询成功");
+            result.setCode(ResultCode.SUCCESS);
+        }
+        return result;
+    }
+
+    @ApiOperation(value = "分页查询用户", hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userVO", value = "用户信息", required = true, paramType = "body", dataType = "UserVO")
     })
@@ -105,7 +124,7 @@ public class UserController {
         return rtv;
     }
 
-    @ApiOperation(value = "更新用户角色",hidden = true)
+    @ApiOperation(value = "更新用户角色", hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userVO", value = "用户信息", required = true, paramType = "body", dataType = "UserVO")
     })

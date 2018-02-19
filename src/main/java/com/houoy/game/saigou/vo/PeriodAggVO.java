@@ -30,6 +30,10 @@ public class PeriodAggVO extends SuperVO {
     @ApiModelProperty(value = "当前时间所在开奖期的编码", example = "B20180213120", hidden = false)
     private String period_code;
 
+    //冗余字段
+    @ApiModelProperty(value = "当前时间所在开奖期的pk", example = "123", hidden = false)
+    private String pk_period;
+
     @Override
     public String getPKField() {
         return null;

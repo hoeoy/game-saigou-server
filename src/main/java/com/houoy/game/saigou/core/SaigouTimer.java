@@ -2,8 +2,10 @@ package com.houoy.game.saigou.core;
 
 import com.houoy.common.utils.DateUtils;
 import com.houoy.game.saigou.config.PeriodConfig;
+import com.houoy.game.saigou.service.BetService;
 import com.houoy.game.saigou.service.PeriodService;
 import com.houoy.game.saigou.util.SaigouConstant;
+import com.houoy.game.saigou.vo.IncomeVO;
 import com.houoy.game.saigou.vo.PeriodAggVO;
 import com.houoy.game.saigou.vo.PeriodRecordVO;
 import org.slf4j.Logger;
@@ -29,6 +31,9 @@ public class SaigouTimer {
     private PeriodService periodService;
 
     @Autowired
+    private BetService betService;
+
+    @Autowired
     private StringRedisTemplate template;
 
     private Period period;//本次的状态
@@ -43,7 +48,7 @@ public class SaigouTimer {
         try {
             period = getCurrentPeriod();
             if (last == null) {//刚刚启动程序,或者停业时间
-                if (period.getPeriodAggVO() == null || period.getTimeType()==TimeType.sleep) {//停业时间
+                if (period.getPeriodAggVO() == null || period.getTimeType() == TimeType.sleep) {//停业时间
                     //什么也不做
                 } else {
                     //判断是否有本期数据
@@ -71,6 +76,87 @@ public class SaigouTimer {
                             String code = period.getPeriodAggVO().getPeriod_code();
                             PeriodRecordVO periodRecordVO = periodService.retrieveByCode(code);
                             if (periodRecordVO != null) {
+                                //获得本期所有下注的积分概况
+                                IncomeVO incomeVO = betService.retrieveSumByPeriodPK(periodRecordVO.getPk_period());
+                                if (incomeVO != null) {
+                                    //设置总下注金额
+                                    incomeVO.setTotal_bet(incomeVO.calcTotal_bet());
+                                    //设置当前相关赔率
+                                    incomeVO.setRateNum(periodConfig.getRateNum());
+                                    incomeVO.setRateTwo(periodConfig.getRateTwo());
+                                    incomeVO.setOdds(periodConfig.getOdds());
+
+                                    //设置每个号码庄家佩服金额，遍历十个号码，计算庄家的收益,
+                                    for (int i = 1; i <= 10; i++) {
+                                        Double oddEvenOut = null;
+                                        Double bigLittleOut = null;
+                                        Double onOut = null;
+                                        if (i % 2 == 0) {//双数
+                                            oddEvenOut = incomeVO.getBet_even() * periodConfig.getRateTwo();//双数赔多少钱
+                                        } else {//单数
+                                            oddEvenOut = incomeVO.getBet_odd() * periodConfig.getRateTwo();//单数数赔多少钱
+                                        }
+
+                                        if (i > 5) {//大
+                                            bigLittleOut = incomeVO.getBet_big() * periodConfig.getRateTwo();//大赔多少钱
+                                        } else {//小
+                                            bigLittleOut = incomeVO.getBet_little() * periodConfig.getRateTwo();//小赔多少钱
+                                        }
+
+                                        //数字
+                                        switch (i) {
+                                            case 1:
+                                                onOut = incomeVO.getBet_1() * periodConfig.getRateNum();//数字赔多少钱
+                                                incomeVO.setWin_1((long) (onOut + oddEvenOut + bigLittleOut));
+                                                break;
+                                            case 2:
+                                                onOut = incomeVO.getBet_2() * periodConfig.getRateNum();//数字赔多少钱
+                                                incomeVO.setWin_2((long) (onOut + oddEvenOut + bigLittleOut));
+                                                break;
+                                            case 3:
+                                                onOut = incomeVO.getBet_3() * periodConfig.getRateNum();//数字赔多少钱
+                                                incomeVO.setWin_3((long) (onOut + oddEvenOut + bigLittleOut));
+                                                break;
+                                            case 4:
+                                                onOut = incomeVO.getBet_4() * periodConfig.getRateNum();//数字赔多少钱
+                                                incomeVO.setWin_4((long) (onOut + oddEvenOut + bigLittleOut));
+                                                break;
+                                            case 5:
+                                                onOut = incomeVO.getBet_5() * periodConfig.getRateNum();//数字赔多少钱
+                                                incomeVO.setWin_5((long) (onOut + oddEvenOut + bigLittleOut));
+                                                break;
+                                            case 6:
+                                                onOut = incomeVO.getBet_6() * periodConfig.getRateNum();//数字赔多少钱
+                                                incomeVO.setWin_6((long) (onOut + oddEvenOut + bigLittleOut));
+                                                break;
+                                            case 7:
+                                                onOut = incomeVO.getBet_7() * periodConfig.getRateNum();//数字赔多少钱
+                                                incomeVO.setWin_7((long) (onOut + oddEvenOut + bigLittleOut));
+                                                break;
+                                            case 8:
+                                                onOut = incomeVO.getBet_8() * periodConfig.getRateNum();//数字赔多少钱
+                                                incomeVO.setWin_8((long) (onOut + oddEvenOut + bigLittleOut));
+                                                break;
+                                            case 9:
+                                                onOut = incomeVO.getBet_9() * periodConfig.getRateNum();//数字赔多少钱
+                                                incomeVO.setWin_9((long) (onOut + oddEvenOut + bigLittleOut));
+                                                break;
+                                            case 10:
+                                                onOut = incomeVO.getBet_10() * periodConfig.getRateNum();//数字赔多少钱
+                                                incomeVO.setWin_10((long) (onOut + oddEvenOut + bigLittleOut));
+                                                break;
+                                        }
+                                    }//end of for
+
+                                    //设置根据庄家赔率计算开哪个号码
+
+                                    //
+                                } else {
+                                    //TODO 本期没有下注记录,任意号码开奖
+
+                                }
+
+
                                 //更新名次和动画属性
 //                                LiveVO liveVO = new LiveVO();
 //                                String animationJson = JSON.toJSONString(liveVO);
