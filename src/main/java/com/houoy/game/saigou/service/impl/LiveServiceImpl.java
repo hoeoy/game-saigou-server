@@ -1,7 +1,11 @@
 package com.houoy.game.saigou.service.impl;
 
-import com.houoy.game.saigou.dao.EssayMapper;
+import com.houoy.game.saigou.config.PeriodConfig;
+import com.houoy.game.saigou.core.Period;
+import com.houoy.game.saigou.core.SaigouTimer;
 import com.houoy.game.saigou.service.LiveService;
+import com.houoy.game.saigou.service.PeriodService;
+import com.houoy.game.saigou.vo.PeriodRecordVO;
 import com.houoy.game.saigou.vo.Result;
 import com.houoy.game.saigou.vo.ResultCode;
 import org.apache.commons.logging.Log;
@@ -13,32 +17,60 @@ import org.springframework.stereotype.Service;
 public class LiveServiceImpl implements LiveService {
     private static final Log logger = LogFactory.getLog(LiveServiceImpl.class);
 
+    @Autowired
+    private SaigouTimer saigouTimer;
 
     @Autowired
-    private EssayMapper essayMapper;
+    private PeriodConfig periodConfig;
+
+    @Autowired
+    private PeriodService periodService;
 
     @Override
     public Result retrieve() {
-        //闭赛时间:返回本赛程还没有开始
+        Result result = new Result();
+        Period period = saigouTimer.getPeriod();
+        if(period!=null){
+            String animation = "";
+            switch (period.getTimeType()) {
+                case sleep://停业时间
+                    result.setCode(ResultCode.SUCCESS);
+                    result.setContent("休息时间。" + periodConfig.getStartTime() + "到" + periodConfig.getEndTime() + "为开盘时间。");
+                    return result;
+                case run_bet://下注时间段
+                    result.setCode(ResultCode.SUCCESS);
+                    result.setMsg("下注时间,返回倒计时等详细信息");
+                    result.setContent(period.getPeriodAggVO());
+                    return result;
+                case run_stop://封盘时间段
+                    result.setCode(ResultCode.SUCCESS);
+                    result.setMsg("封盘");
+                    animation = getCurrentAnamition(period);
+                    result.setContent(animation);
+                    return result;
+                case run_show://开奖（播放动画)时间段
+                    result.setCode(ResultCode.SUCCESS);
+                    result.setMsg("动画");
+                    animation = getCurrentAnamition(period);
+                    result.setContent(animation);
+                    return result;
+            }
+        }
 
-        //开赛时间:
-        //开盘等待下注时间段：返回倒计时  00:00:00---00:04:30
-
-        //封盘时间段00:04:30-00:05:00,返回封盘，并且倒计时
-
-        //直播时间段00:04:50-00:05:00,返回直播动画
-
-        Result<String> result = new Result();
-        result.setCode(ResultCode.SUCCESS);
-        result.setContent("//闭赛时间:返回本赛程还没有开始\n" +
-                "        \n" +
-                "        //开赛时间:\n" +
-                "        //开盘等待下注时间段：返回倒计时  00:00:00---00:04:30\n" +
-                "        \n" +
-                "        //封盘时间段00:04:30-00:05:00,返回封盘，并且倒计时\n" +
-                "\n" +
-                "        //直播时间段00:04:50-00:05:00,返回直播动画");
-
+        result.setCode(ResultCode.ERROR_DATA);
+        result.setMsg("发生错误");
+        result.setContent("发生错误");
         return result;
+    }
+
+    private String getCurrentAnamition(Period period) {
+        //产生本期的名次，动画参数 更新数据
+        String code = period.getPeriodAggVO().getPeriod_code();
+        PeriodRecordVO periodRecordVO = periodService.retrieveByCode(code);
+        if (periodRecordVO != null) {
+            return periodRecordVO.getAnimation();
+        }
+
+        return null;
     }
 }

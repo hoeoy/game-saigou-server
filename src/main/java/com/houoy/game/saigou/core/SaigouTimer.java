@@ -114,7 +114,7 @@ public class SaigouTimer {
         }
     }
 
-    public String savePeriodRecord(Period period) {
+    private String savePeriodRecord(Period period) {
         PeriodAggVO currentPeriodAggVO = period.getPeriodAggVO();
         PeriodRecordVO periodRecordVO = new PeriodRecordVO();
         periodRecordVO.setPeriod_code(currentPeriodAggVO.getPeriod_code());
@@ -143,7 +143,7 @@ public class SaigouTimer {
         return periodStr;
     }
 
-    public Period getCurrentPeriod() throws ParseException {
+    private Period getCurrentPeriod() throws ParseException {
         String today = DateUtils.currentDate();
         String startTime = periodConfig.getStartTime();
         String endTime = periodConfig.getEndTime();
@@ -176,7 +176,7 @@ public class SaigouTimer {
         return period;
     }
 
-    public PeriodAggVO getCurrentPeriodAgg(Long startTime, Long endTime, Long current) throws ParseException {
+    private PeriodAggVO getCurrentPeriodAgg(Long startTime, Long endTime, Long current) throws ParseException {
         Integer durationMillSecond = periodConfig.getDurationSecond() * 1000;//每期持续多长时间,300
         Integer stopMillSecond = periodConfig.getStopSecond() * 1000;//每期剩余多长时间开始封盘,30
         Integer showMillSecond = periodConfig.getShowSecond() * 1000;//每期剩余多长时间开始播放动画 ,10

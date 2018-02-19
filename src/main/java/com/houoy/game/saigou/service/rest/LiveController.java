@@ -31,14 +31,10 @@ public class LiveController {
             " //闭赛时间:返回本赛程还没有开始。" +
             " //开赛时间:。" +
             " //开盘等待下注时间段：返回倒计时  00:00:00---00:04:30。" +
-            " //封盘时间段00:04:30-00:05:00,返回封盘，并且倒计时。" +
+            " //封盘时间段00:04:30-00:05:00,返回封盘,倒计时,直播动画" +
             " //直播时间段00:04:50-00:05:00,返回直播动画。")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "time", value = "时间戳", required = true, paramType = "body", dataType = "string")
-    })
     @GetMapping(value = "retrieve")
-    public Result retrieve(String time) {
-        Result<String> result = liveService.retrieve();
-        return result;
+    public Result retrieve() {
+        return liveService.retrieve();
     }
 }
