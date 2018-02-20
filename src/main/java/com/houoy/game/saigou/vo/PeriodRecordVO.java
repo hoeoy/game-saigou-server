@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.beanutils.MethodUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ import java.util.Random;
 @Data
 @NoArgsConstructor
 public class PeriodRecordVO extends SuperVO {
+    private static final Log logger = LogFactory.getLog(PeriodRecordVO.class);
+
     @ApiModelProperty(required = false, hidden = true)
     private String pk_period;
     @ApiModelProperty(value = "编码", example = "B20180213120", hidden = false)
@@ -80,43 +84,46 @@ public class PeriodRecordVO extends SuperVO {
 
     //生成名次和动画
     public Boolean calcRankAndAnimation(int winNum) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        LiveVO liveVO = new LiveVO();
-        //1-8 秒  每秒每组数加50px左右
-        int interval = 50;//每秒间隔
-        int range = 10;//上下10px摆动
-        for (int i = 1; i <= 8; i++) {
-            liveVO.getM1().add(i * interval - range + new Random().nextInt() % (range * 2));
-            liveVO.getM2().add(i * interval - range + new Random().nextInt() % (range * 2));
-            liveVO.getM3().add(i * interval - range + new Random().nextInt() % (range * 2));
-            liveVO.getM4().add(i * interval - range + new Random().nextInt() % (range * 2));
-            liveVO.getM5().add(i * interval - range + new Random().nextInt() % (range * 2));
-            liveVO.getM6().add(i * interval - range + new Random().nextInt() % (range * 2));
-            liveVO.getM7().add(i * interval - range + new Random().nextInt() % (range * 2));
-            liveVO.getM8().add(i * interval - range + new Random().nextInt() % (range * 2));
-            liveVO.getM9().add(i * interval - range + new Random().nextInt() % (range * 2));
-            liveVO.getM10().add(i * interval - range + new Random().nextInt() % (range * 2));
-        }
-
-        //生成名次List
-        ArrayList<Integer> sequence = new ArrayList();
-        for (int i = 1; i <= range; i++) {
-            sequence.add(i);
-        }
-        sequence.remove(winNum-1);//取出第一名
-        randomSequence(sequence);//乱序
-        sequence.add(winNum);//第一名加到最后
-        Collections.reverse(sequence);//翻转，第一名在第一个位置
-
-        //9-11秒  每秒每组数加200px左右
-        interval = 200;
-        for (int i = 1; i <= 3; i++) {
-            for (int m = 1; m <= 10; m++) {
-                Integer order = sequence.indexOf(m);//取得名次
-
-                ((List<Integer>) MethodUtils.invokeMethod(liveVO, "getM" + (m), null))
-                        .add(400 + i * interval + (10 - order) * 10);
+        if (winNum < 1 || winNum > 10) {
+            logger.error("winNum数值异常,winNum=" + winNum);
+        } else {
+            LiveVO liveVO = new LiveVO();
+            //1-8 秒  每秒每组数加50px左右
+            int interval = 50;//每秒间隔
+            int range = 10;//上下10px摆动
+            for (int i = 1; i <= 8; i++) {
+                liveVO.getM1().add(i * interval - range + new Random().nextInt(range * 2));
+                liveVO.getM2().add(i * interval - range + new Random().nextInt(range * 2));
+                liveVO.getM3().add(i * interval - range + new Random().nextInt(range * 2));
+                liveVO.getM4().add(i * interval - range + new Random().nextInt(range * 2));
+                liveVO.getM5().add(i * interval - range + new Random().nextInt(range * 2));
+                liveVO.getM6().add(i * interval - range + new Random().nextInt(range * 2));
+                liveVO.getM7().add(i * interval - range + new Random().nextInt(range * 2));
+                liveVO.getM8().add(i * interval - range + new Random().nextInt(range * 2));
+                liveVO.getM9().add(i * interval - range + new Random().nextInt(range * 2));
+                liveVO.getM10().add(i * interval - range + new Random().nextInt(range * 2));
             }
-        }
+
+            //生成名次List
+            ArrayList<Integer> sequence = new ArrayList();
+            for (int i = 1; i <= range; i++) {
+                sequence.add(i);
+            }
+            sequence.remove(winNum - 1);//取出第一名
+            randomSequence(sequence);//乱序
+            sequence.add(winNum);//第一名加到最后
+            Collections.reverse(sequence);//翻转，第一名在第一个位置
+
+            //9-11秒  每秒每组数加200px左右
+            interval = 200;
+            for (int i = 1; i <= 3; i++) {
+                for (int m = 1; m <= 10; m++) {
+                    Integer order = sequence.indexOf(m);//取得名次
+
+                    ((List<Integer>) MethodUtils.invokeMethod(liveVO, "getM" + (m), null))
+                            .add(400 + i * interval + (10 - order) * 10);
+                }
+            }
 
 
 //        String animationJson = "{" +
@@ -131,29 +138,31 @@ public class PeriodRecordVO extends SuperVO {
 //                "\"m9\": [50, 100, 130, 180, 290, 330, 330, 400, 500, 625]," +
 //                "\"m10\": [50, 100, 150, 200, 250, 300, 320, 400, 500, 650]" +
 //                "}";
-        setF1(sequence.get(0));
-        setF2(sequence.get(1));
-        setF3(sequence.get(2));
-        setF4(sequence.get(3));
-        setF5(sequence.get(4));
-        setF6(sequence.get(5));
-        setF7(sequence.get(6));
-        setF8(sequence.get(7));
-        setF9(sequence.get(8));
-        setF10(sequence.get(9));
+            setF1(sequence.get(0));
+            setF2(sequence.get(1));
+            setF3(sequence.get(2));
+            setF4(sequence.get(3));
+            setF5(sequence.get(4));
+            setF6(sequence.get(5));
+            setF7(sequence.get(6));
+            setF8(sequence.get(7));
+            setF9(sequence.get(8));
+            setF10(sequence.get(9));
 
-        String animationJson = JSON.toJSONString(liveVO);
-        setAnimation(animationJson);
-        if (winNum % 2 == 0) {
-            setOdd_even(2);
-        } else {
-            setOdd_even(1);
+            String animationJson = JSON.toJSONString(liveVO);
+            setAnimation(animationJson);
+            if (winNum % 2 == 0) {
+                setOdd_even(2);
+            } else {
+                setOdd_even(1);
+            }
+            if (winNum > 5) {
+                setLittle_big(2);
+            } else {
+                setLittle_big(1);
+            }
         }
-        if (winNum > 5) {
-            setLittle_big(2);
-        } else {
-            setLittle_big(1);
-        }
+
         return true;
     }
 

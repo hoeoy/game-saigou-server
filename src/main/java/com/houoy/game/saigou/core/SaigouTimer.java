@@ -182,7 +182,7 @@ public class SaigouTimer {
                                     betService.updateWinByPeriodPkAndItem(searchWinBetVO);
                                 } else {
                                     //TODO 本期没有下注记录,任意号码开奖
-                                    win_num = new Random().nextInt() % 10 + 1;
+                                    win_num = new Random().nextInt(10)+1;
                                 }
 
                                 //更新名次和动画属性
@@ -210,6 +210,7 @@ public class SaigouTimer {
 
     private String savePeriodRecord(Period period) {
         PeriodAggVO currentPeriodAggVO = period.getPeriodAggVO();
+
         PeriodRecordVO periodRecordVO = new PeriodRecordVO();
         periodRecordVO.setPeriod_code(currentPeriodAggVO.getPeriod_code());
         periodRecordVO.setPeriod_desc(currentPeriodAggVO.getPeriod_code());
