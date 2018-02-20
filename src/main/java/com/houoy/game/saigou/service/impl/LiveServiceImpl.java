@@ -31,7 +31,7 @@ public class LiveServiceImpl implements LiveService {
         Result result = new Result();
         Period period = saigouTimer.getPeriod();
         if(period!=null){
-            String animation = "";
+            PeriodRecordVO animation = null;
             switch (period.getTimeType()) {
                 case sleep://停业时间
                     result.setCode(ResultCode.SUCCESS);
@@ -63,12 +63,12 @@ public class LiveServiceImpl implements LiveService {
         return result;
     }
 
-    private String getCurrentAnamition(Period period) {
+    private PeriodRecordVO getCurrentAnamition(Period period) {
         //产生本期的名次，动画参数 更新数据
         String code = period.getPeriodAggVO().getPeriod_code();
         PeriodRecordVO periodRecordVO = periodService.retrieveByCode(code);
         if (periodRecordVO != null) {
-            return periodRecordVO.getAnimation();
+            return periodRecordVO;
         }
 
         return null;

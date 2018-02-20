@@ -99,4 +99,14 @@ public class BetServiceImpl extends BaseServiceImpl<BetMapper, BetDetailRecordVO
     public IncomeVO retrieveSumByPeriodPK(String pk_period) {
         return mapper.retrieveSumByPeriodPK(pk_period);
     }
+
+    @Override
+    public List<BetDetailRecordVO> retrieveAllByPeriodPkAndItem(SearchWinBetVO searchWinBetVO) {
+        return mapper.retrieveAllByPeriodPkAndItem(searchWinBetVO);
+    }
+
+    @Override
+    public Integer updateWinByPeriodPkAndItem(SearchWinBetVO searchWinBetVO) {
+        return mapper.updateWinByPeriodPkAndItem(searchWinBetVO);
+    }
 }

@@ -22,7 +22,7 @@ public class CashFlowVO extends SuperVO {
     @ApiModelProperty(value = "下注项目pk", example = "主键", hidden = false)
     private String pk_bet;
     @ApiModelProperty(value = "流水金额，单位：分（人民币）", example = "12", hidden = false)
-    private Integer money;
+    private Long money;
     @ApiModelProperty(value = "处理流水金额前总额", example = "1234", hidden = false)
     private Long total_money_before;
     @ApiModelProperty(value = "处理流水金额后总额", example = "1300", hidden = false)

@@ -62,7 +62,7 @@ public class PeriodRecordController extends BaseController<PeriodRecordVO, Perio
         return super.retrieve(vo, request);
     }
 
-    @ApiOperation(value = "今日赛事状态汇总")
+    @ApiOperation(value = "今日赛事状态汇总，营业时间返回本期状态，非营业时间返回null")
     @GetMapping(value = "retrieveSummery")
     public Result<PeriodAggVO> retrieveSummery() {
         Period period = saigouTimer.getPeriod();

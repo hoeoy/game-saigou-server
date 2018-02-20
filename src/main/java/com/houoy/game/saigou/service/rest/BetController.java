@@ -5,6 +5,7 @@ import com.houoy.common.vo.RequestResultVO;
 import com.houoy.common.web.BaseController;
 import com.houoy.game.saigou.service.BetService;
 import com.houoy.game.saigou.vo.BetDetailRecordVO;
+import com.houoy.game.saigou.vo.SearchWinBetVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -136,6 +137,18 @@ public class BetController extends BaseController<BetDetailRecordVO, BetService>
     @PostMapping(value = "retrieve")
     public PageResultVO retrieve(@RequestBody BetDetailRecordVO vo, HttpServletRequest request) {
         return super.retrieve(vo, request);
+    }
+
+    @ApiOperation(value = "测试retrieveAllByPeriodPkAndItem", hidden = true)
+    @PostMapping(value = "retrieveAllByPeriodPkAndItem")
+    public List retrieveAllByPeriodPkAndItem(@RequestBody SearchWinBetVO searchWinBetVO) {
+        return service.retrieveAllByPeriodPkAndItem(searchWinBetVO);
+    }
+
+    @ApiOperation(value = "测试updateWinByPeriodPkAndItem", hidden = true)
+    @PostMapping(value = "updateWinByPeriodPkAndItem")
+    public Integer updateWinByPeriodPkAndItem(@RequestBody SearchWinBetVO searchWinBetVO) {
+        return service.updateWinByPeriodPkAndItem(searchWinBetVO);
     }
 
 //    @ApiOperation(value = "分页查询中奖明细")

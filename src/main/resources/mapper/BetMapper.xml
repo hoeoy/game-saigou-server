@@ -21,6 +21,17 @@
     <select id="retrieveAll" resultType="java.util.Map">
 
     </select>
+    <select id="retrieveAllByPeriodPkAndItem" resultType="com.houoy.game.saigou.vo.BetDetailRecordVO"
+            parameterType="com.houoy.game.saigou.vo.SearchWinBetVO">
+        select * from game_saigou_bet
+        where pk_period="${pk_period}"
+        and (
+        <foreach collection="bet_item_array" item="item" index="index"
+                 open="(" separator="or" close=")">
+            bet_item = #{item}
+        </foreach>
+        )
+    </select>
     <select id="retrieveSumByPeriodPK" resultType="com.houoy.game.saigou.vo.IncomeVO" parameterType="string">
          SELECT pk_period,
         SUM( CASE WHEN bet_item='big' THEN bet_money END) as bet_big,
@@ -78,6 +89,17 @@
         </trim>
 
         where pk_bet=#{pk_bet}
+    </update>
+
+    <update id="updateWinByPeriodPkAndItem" parameterType="com.houoy.game.saigou.vo.SearchWinBetVO">
+        update game_saigou_bet set win="1"
+        where pk_period="${pk_period}"
+        and (
+        <foreach collection="bet_item_array" item="item" index="index"
+                 open="(" separator="or" close=")">
+            bet_item = #{item}
+        </foreach>
+        )
     </update>
 
     <delete id="deleteByPK">

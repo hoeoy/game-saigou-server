@@ -1,6 +1,8 @@
 package com.houoy.game.saigou.vo;
 
 import com.houoy.common.vo.SuperVO;
+import com.houoy.game.saigou.config.PeriodConfig;
+import com.houoy.game.saigou.core.BetType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +24,7 @@ public class BetDetailRecordVO extends SuperVO {
     @ApiModelProperty(value = "下注项目", example = "大big小little单odd双even，数字1-10", hidden = false)
     private String bet_item;
     @ApiModelProperty(value = "下注数量,单位是分（人民币）", example = "1200", hidden = false)
-    private Integer bet_money;
+    private Long bet_money;
     @ApiModelProperty(value = "是否中奖", example = "1为中奖,", hidden = false)
     private Integer win;
 
@@ -48,4 +50,25 @@ public class BetDetailRecordVO extends SuperVO {
         return pk_bet;
     }
 
+    public double calcWinMoney(PeriodConfig periodConfig) {
+        switch (bet_item) {
+            case BetType.big:
+            case BetType.little:
+            case BetType.odd:
+            case BetType.even:
+                return bet_money * periodConfig.getRateTwo();
+            case BetType.n1:
+            case BetType.n2:
+            case BetType.n3:
+            case BetType.n4:
+            case BetType.n5:
+            case BetType.n6:
+            case BetType.n7:
+            case BetType.n8:
+            case BetType.n9:
+            case BetType.n10:
+                return bet_money * periodConfig.getRateNum();
+        }
+        return 0;
+    }
 }

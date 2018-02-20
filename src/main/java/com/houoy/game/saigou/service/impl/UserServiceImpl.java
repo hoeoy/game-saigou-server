@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
                 cashFlowVO.setCash_type(CashFlowType.with_draw);
             }
             cashFlowVO.setPk_user(vo.getPk_user());
-            cashFlowVO.setMoney(money.intValue());
+            cashFlowVO.setMoney(money);
             cashFlowVO.setTotal_money_before(total_before);
             cashFlowVO.setTotal_money_after(total_after);
             Integer cashResult = cashFlowService.saveByVO(cashFlowVO);

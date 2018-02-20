@@ -1,13 +1,16 @@
 package com.houoy.game.saigou.core;
 
 import com.houoy.common.utils.DateUtils;
+import com.houoy.common.vo.UserVO;
 import com.houoy.game.saigou.config.PeriodConfig;
 import com.houoy.game.saigou.service.BetService;
+import com.houoy.game.saigou.service.CashFlowService;
 import com.houoy.game.saigou.service.PeriodService;
+import com.houoy.game.saigou.service.UserService;
 import com.houoy.game.saigou.util.SaigouConstant;
-import com.houoy.game.saigou.vo.IncomeVO;
-import com.houoy.game.saigou.vo.PeriodAggVO;
-import com.houoy.game.saigou.vo.PeriodRecordVO;
+import com.houoy.game.saigou.vo.*;
+import org.apache.commons.beanutils.MethodUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +18,13 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 @Component
 public class SaigouTimer {
@@ -31,7 +38,13 @@ public class SaigouTimer {
     private PeriodService periodService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private BetService betService;
+
+    @Autowired
+    private CashFlowService cashFlowService;
 
     @Autowired
     private StringRedisTemplate template;
@@ -75,7 +88,8 @@ public class SaigouTimer {
                             //产生本期的名次，动画参数 更新数据
                             String code = period.getPeriodAggVO().getPeriod_code();
                             PeriodRecordVO periodRecordVO = periodService.retrieveByCode(code);
-                            if (periodRecordVO != null) {
+                            int win_num = -1;//第一名号码
+                            if (periodRecordVO != null && periodRecordVO.getF1()==null) {//不能重复开奖，只要一开奖，f1就不为null
                                 //获得本期所有下注的积分概况
                                 IncomeVO incomeVO = betService.retrieveSumByPeriodPK(periodRecordVO.getPk_period());
                                 if (incomeVO != null) {
@@ -88,9 +102,9 @@ public class SaigouTimer {
 
                                     //设置每个号码庄家佩服金额，遍历十个号码，计算庄家的收益,
                                     for (int i = 1; i <= 10; i++) {
-                                        Double oddEvenOut = null;
-                                        Double bigLittleOut = null;
-                                        Double onOut = null;
+                                        Double oddEvenOut = null;//单双赔多少
+                                        Double bigLittleOut = null;//大小赔多少
+                                        Double oneOut = null;//数字赔多少
                                         if (i % 2 == 0) {//双数
                                             oddEvenOut = incomeVO.getBet_even() * periodConfig.getRateTwo();//双数赔多少钱
                                         } else {//单数
@@ -104,87 +118,75 @@ public class SaigouTimer {
                                         }
 
                                         //数字
-                                        switch (i) {
-                                            case 1:
-                                                onOut = incomeVO.getBet_1() * periodConfig.getRateNum();//数字赔多少钱
-                                                incomeVO.setWin_1((long) (onOut + oddEvenOut + bigLittleOut));
-                                                break;
-                                            case 2:
-                                                onOut = incomeVO.getBet_2() * periodConfig.getRateNum();//数字赔多少钱
-                                                incomeVO.setWin_2((long) (onOut + oddEvenOut + bigLittleOut));
-                                                break;
-                                            case 3:
-                                                onOut = incomeVO.getBet_3() * periodConfig.getRateNum();//数字赔多少钱
-                                                incomeVO.setWin_3((long) (onOut + oddEvenOut + bigLittleOut));
-                                                break;
-                                            case 4:
-                                                onOut = incomeVO.getBet_4() * periodConfig.getRateNum();//数字赔多少钱
-                                                incomeVO.setWin_4((long) (onOut + oddEvenOut + bigLittleOut));
-                                                break;
-                                            case 5:
-                                                onOut = incomeVO.getBet_5() * periodConfig.getRateNum();//数字赔多少钱
-                                                incomeVO.setWin_5((long) (onOut + oddEvenOut + bigLittleOut));
-                                                break;
-                                            case 6:
-                                                onOut = incomeVO.getBet_6() * periodConfig.getRateNum();//数字赔多少钱
-                                                incomeVO.setWin_6((long) (onOut + oddEvenOut + bigLittleOut));
-                                                break;
-                                            case 7:
-                                                onOut = incomeVO.getBet_7() * periodConfig.getRateNum();//数字赔多少钱
-                                                incomeVO.setWin_7((long) (onOut + oddEvenOut + bigLittleOut));
-                                                break;
-                                            case 8:
-                                                onOut = incomeVO.getBet_8() * periodConfig.getRateNum();//数字赔多少钱
-                                                incomeVO.setWin_8((long) (onOut + oddEvenOut + bigLittleOut));
-                                                break;
-                                            case 9:
-                                                onOut = incomeVO.getBet_9() * periodConfig.getRateNum();//数字赔多少钱
-                                                incomeVO.setWin_9((long) (onOut + oddEvenOut + bigLittleOut));
-                                                break;
-                                            case 10:
-                                                onOut = incomeVO.getBet_10() * periodConfig.getRateNum();//数字赔多少钱
-                                                incomeVO.setWin_10((long) (onOut + oddEvenOut + bigLittleOut));
-                                                break;
+                                        double recentWin = incomeVO.getTotal_win() * incomeVO.getOdds();//需要盈利多少钱
+                                        double nearest = 100000000;//每个号盈利与目标盈利的差值，取差值最近的开奖
+                                        double win = 0;
+                                        double pei = 0;
+
+                                        Long bet = (Long) MethodUtils.invokeMethod(incomeVO, "getBet_" + i, null);
+                                        oneOut = bet * periodConfig.getRateNum();//数字赔多少钱
+                                        pei = oneOut + oddEvenOut + bigLittleOut;//此数字开奖，共赔多少
+                                        win = incomeVO.getTotal_bet() - pei;//此数字开奖，共盈利多少，负数：庄家赔钱
+                                        MethodUtils.invokeMethod(incomeVO, "setBet_" + i, (long) win);
+                                        if (win > 0) {//盈利必须为正数。
+                                            if (Math.abs(win - recentWin) < nearest) {//实际盈利与目标盈利差值小于最小差值
+                                                nearest = Math.abs(win - recentWin);
+                                                //设置开哪个号码,庄家本期收益
+                                                incomeVO.setTotal_win((long) win);
+                                                incomeVO.setWin_num(i);
+                                                win_num = i;
+                                            }
                                         }
                                     }//end of for
 
-                                    //设置根据庄家赔率计算开哪个号码
+                                    //查找所有中奖的下注记录
+                                    SearchWinBetVO searchWinBetVO = new SearchWinBetVO();
+                                    searchWinBetVO.initBetItemArray(incomeVO.getWin_num());
+                                    searchWinBetVO.setPk_period(periodRecordVO.getPk_period());
+                                    List<BetDetailRecordVO> winBetRecords = betService.retrieveAllByPeriodPkAndItem(searchWinBetVO);
 
-                                    //
+                                    Map<String, UserVO> users = new HashedMap();//key:pk_user
+                                    //增加cash_flow表的流水
+                                    for (BetDetailRecordVO betVO : winBetRecords) {
+                                        String pk_user = betVO.getPk_user();
+                                        CashFlowVO cashFlowVO = new CashFlowVO();
+                                        cashFlowVO.setCash_type(CashFlowType.win);
+                                        cashFlowVO.setPk_user(pk_user);
+                                        cashFlowVO.setPk_period(betVO.getPk_period());
+                                        cashFlowVO.setPk_bet(betVO.getPk_bet());
+                                        Long cashMoney = (long) betVO.calcWinMoney(periodConfig);
+                                        cashFlowVO.setMoney(cashMoney);
+
+                                        UserVO userVO = users.get(pk_user);
+                                        if (userVO == null) {
+                                            userVO = userService.retrieveByPk(pk_user);
+                                            userVO.setUser_code(null);
+                                            userVO.setUser_name(null);
+                                            users.put(pk_user, userVO);
+                                        }
+                                        Long tatalBefore = Long.parseLong(userVO.getDef1());
+                                        Long totalAfter = tatalBefore + cashMoney;
+                                        userVO.setDef1(totalAfter + "");
+
+                                        cashFlowVO.setTotal_money_before(tatalBefore);
+                                        cashFlowVO.setTotal_money_after(totalAfter);
+                                        Integer cashResult = cashFlowService.saveByVO(cashFlowVO);
+                                    }
+
+                                    //增加用户表的积分
+                                    for (String key : users.keySet()) {
+                                        Integer userResult = userService.updateUserByVO(users.get(key));
+                                    }
+
+                                    //更新bet表的win状态
+                                    betService.updateWinByPeriodPkAndItem(searchWinBetVO);
                                 } else {
                                     //TODO 本期没有下注记录,任意号码开奖
-
+                                    win_num = new Random().nextInt() % 10 + 1;
                                 }
 
-
                                 //更新名次和动画属性
-//                                LiveVO liveVO = new LiveVO();
-//                                String animationJson = JSON.toJSONString(liveVO);
-                                String animationJson = "{" +
-                                        "\"m1\": [50, 100, 150, 200, 250, 300, 350, 400, 500, 645]," +
-                                        "\"m2\": [60, 110, 130, 220, 250, 280, 360, 400, 520, 605]," +
-                                        "\"m3\": [50, 100, 140, 200, 260, 270, 370, 420, 530, 750]," +
-                                        "\"m4\": [30, 100, 150, 200, 270, 310, 380, 400, 540, 730]," +
-                                        "\"m5\": [50, 100, 160, 190, 250, 300, 390, 400, 500, 620]," +
-                                        "\"m6\": [90, 130, 170, 200, 280, 260, 320, 400, 560, 610]," +
-                                        "\"m7\": [50, 100, 130, 170, 250, 310, 380, 400, 500, 600]," +
-                                        "\"m8\": [60, 100, 150, 200, 250, 330, 370, 400, 580, 690]," +
-                                        "\"m9\": [50, 100, 130, 180, 290, 330, 330, 400, 500, 625]," +
-                                        "\"m10\": [50, 100, 150, 200, 250, 300, 320, 400, 500, 650]" +
-                                        "}";
-                                periodRecordVO.setF1(3);
-                                periodRecordVO.setF2(4);
-                                periodRecordVO.setF3(8);
-                                periodRecordVO.setF4(10);
-                                periodRecordVO.setF5(1);
-                                periodRecordVO.setF6(9);
-                                periodRecordVO.setF7(5);
-                                periodRecordVO.setF8(6);
-                                periodRecordVO.setF9(1);
-                                periodRecordVO.setF10(7);
-                                periodRecordVO.setAnimation(animationJson);
-                                periodRecordVO.setOdd_even(1);
-                                periodRecordVO.setLittle_big(1);
+                                periodRecordVO.calcRankAndAnimation(win_num);
                                 periodService.updateByVO(periodRecordVO);
                             }
                             break;
@@ -196,6 +198,12 @@ public class SaigouTimer {
 
             last = period;
         } catch (ParseException e) {
+            logger.error("核心逻辑类产生严重错误，需要重启服务", e.getLocalizedMessage());
+        } catch (NoSuchMethodException e) {
+            logger.error("核心逻辑类产生严重错误，需要重启服务", e.getLocalizedMessage());
+        } catch (IllegalAccessException e) {
+            logger.error("核心逻辑类产生严重错误，需要重启服务", e.getLocalizedMessage());
+        } catch (InvocationTargetException e) {
             logger.error("核心逻辑类产生严重错误，需要重启服务", e.getLocalizedMessage());
         }
     }
@@ -210,8 +218,13 @@ public class SaigouTimer {
         periodRecordVO.setPeriod_block_time(currentPeriodAggVO.getPeriod_block_time());
         periodRecordVO.setPeriod_show_time(currentPeriodAggVO.getPeriod_show_time());
         periodRecordVO.setPeriod_stop_time(currentPeriodAggVO.getPeriod_stop_time());
-        Integer pk = periodService.saveByVO(periodRecordVO);
-        return pk + "";
+
+        PeriodRecordVO recordVO = periodService.retrieveByCode(periodRecordVO.getPeriod_code());
+        if (recordVO == null) {
+            //新增
+            Integer pk = periodService.saveByVO(periodRecordVO);
+        }
+        return "1";
     }
 
     private String getPeriodStr(Period period) {
