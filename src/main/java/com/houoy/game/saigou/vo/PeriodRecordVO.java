@@ -90,18 +90,31 @@ public class PeriodRecordVO extends SuperVO {
             LiveVO liveVO = new LiveVO();
             //1-8 秒  每秒每组数加50px左右
             int interval = 50;//每秒间隔
-            int range = 10;//上下10px摆动
-            for (int i = 1; i <= 8; i++) {
-                liveVO.getM1().add(i * interval - range + new Random().nextInt(range * 2));
-                liveVO.getM2().add(i * interval - range + new Random().nextInt(range * 2));
-                liveVO.getM3().add(i * interval - range + new Random().nextInt(range * 2));
-                liveVO.getM4().add(i * interval - range + new Random().nextInt(range * 2));
-                liveVO.getM5().add(i * interval - range + new Random().nextInt(range * 2));
-                liveVO.getM6().add(i * interval - range + new Random().nextInt(range * 2));
-                liveVO.getM7().add(i * interval - range + new Random().nextInt(range * 2));
-                liveVO.getM8().add(i * interval - range + new Random().nextInt(range * 2));
-                liveVO.getM9().add(i * interval - range + new Random().nextInt(range * 2));
-                liveVO.getM10().add(i * interval - range + new Random().nextInt(range * 2));
+            int range = 20;//上下20px摆动
+            for (int i = 1; i <= 3; i++) {
+                for (int m = 1; m <= 10; m++) {
+                    ((List<Integer>) MethodUtils.invokeMethod(liveVO, "getM" + (m), null))
+                            .add(i * interval - range + new Random().nextInt(range * 2));
+                }
+//                liveVO.getM1().add(i * interval - range + new Random().nextInt(range * 2));
+//                liveVO.getM2().add(i * interval - range + new Random().nextInt(range * 2));
+//                liveVO.getM3().add(i * interval - range + new Random().nextInt(range * 2));
+//                liveVO.getM4().add(i * interval - range + new Random().nextInt(range * 2));
+//                liveVO.getM5().add(i * interval - range + new Random().nextInt(range * 2));
+//                liveVO.getM6().add(i * interval - range + new Random().nextInt(range * 2));
+//                liveVO.getM7().add(i * interval - range + new Random().nextInt(range * 2));
+//                liveVO.getM8().add(i * interval - range + new Random().nextInt(range * 2));
+//                liveVO.getM9().add(i * interval - range + new Random().nextInt(range * 2));
+//                liveVO.getM10().add(i * interval - range + new Random().nextInt(range * 2));
+            }
+
+            for (int i = 4; i <= 8; i++) {
+                for (int m = 1; m <= 10; m++) {
+                    Integer lastValue = ((List<Integer>) MethodUtils.invokeMethod(liveVO, "getM" + (m), null)).get(i-2);
+
+                    ((List<Integer>) MethodUtils.invokeMethod(liveVO, "getM" + (m), null))
+                            .add(lastValue + interval - range + new Random().nextInt(range * 2));
+                }
             }
 
             //生成名次List
