@@ -96,16 +96,6 @@ public class PeriodRecordVO extends SuperVO {
                     ((List<Integer>) MethodUtils.invokeMethod(liveVO, "getM" + (m), null))
                             .add(i * interval - range + new Random().nextInt(range * 2));
                 }
-//                liveVO.getM1().add(i * interval - range + new Random().nextInt(range * 2));
-//                liveVO.getM2().add(i * interval - range + new Random().nextInt(range * 2));
-//                liveVO.getM3().add(i * interval - range + new Random().nextInt(range * 2));
-//                liveVO.getM4().add(i * interval - range + new Random().nextInt(range * 2));
-//                liveVO.getM5().add(i * interval - range + new Random().nextInt(range * 2));
-//                liveVO.getM6().add(i * interval - range + new Random().nextInt(range * 2));
-//                liveVO.getM7().add(i * interval - range + new Random().nextInt(range * 2));
-//                liveVO.getM8().add(i * interval - range + new Random().nextInt(range * 2));
-//                liveVO.getM9().add(i * interval - range + new Random().nextInt(range * 2));
-//                liveVO.getM10().add(i * interval - range + new Random().nextInt(range * 2));
             }
 
             for (int i = 4; i <= 8; i++) {
@@ -119,7 +109,7 @@ public class PeriodRecordVO extends SuperVO {
 
             //生成名次List
             ArrayList<Integer> sequence = new ArrayList();
-            for (int i = 1; i <= range; i++) {
+            for (int i = 1; i <= 10; i++) {
                 sequence.add(i);
             }
             sequence.remove(winNum - 1);//取出第一名
@@ -138,19 +128,6 @@ public class PeriodRecordVO extends SuperVO {
                 }
             }
 
-
-//        String animationJson = "{" +
-//                "\"m1\": [50, 100, 150, 200, 250, 300, 350, 400, 500, 645]," +
-//                "\"m2\": [60, 110, 130, 220, 250, 280, 360, 400, 520, 605]," +
-//                "\"m3\": [50, 100, 140, 200, 260, 270, 370, 420, 530, 750]," +
-//                "\"m4\": [30, 100, 150, 200, 270, 310, 380, 400, 540, 730]," +
-//                "\"m5\": [50, 100, 160, 190, 250, 300, 390, 400, 500, 620]," +
-//                "\"m6\": [90, 130, 170, 200, 280, 260, 320, 400, 560, 610]," +
-//                "\"m7\": [50, 100, 130, 170, 250, 310, 380, 400, 500, 600]," +
-//                "\"m8\": [60, 100, 150, 200, 250, 330, 370, 400, 580, 690]," +
-//                "\"m9\": [50, 100, 130, 180, 290, 330, 330, 400, 500, 625]," +
-//                "\"m10\": [50, 100, 150, 200, 250, 300, 320, 400, 500, 650]" +
-//                "}";
             setF1(sequence.get(0));
             setF2(sequence.get(1));
             setF3(sequence.get(2));
