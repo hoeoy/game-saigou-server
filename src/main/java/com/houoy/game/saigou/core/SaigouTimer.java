@@ -4,10 +4,7 @@ import com.houoy.common.utils.DateUtils;
 import com.houoy.common.vo.UserVO;
 import com.houoy.game.saigou.config.PeriodConfig;
 import com.houoy.game.saigou.dao.UserMapper;
-import com.houoy.game.saigou.service.BetService;
-import com.houoy.game.saigou.service.CashFlowService;
-import com.houoy.game.saigou.service.PeriodService;
-import com.houoy.game.saigou.service.UserService;
+import com.houoy.game.saigou.service.*;
 import com.houoy.game.saigou.util.SaigouConstant;
 import com.houoy.game.saigou.vo.*;
 import org.apache.commons.beanutils.MethodUtils;
@@ -37,6 +34,9 @@ public class SaigouTimer {
 
     @Autowired
     private PeriodService periodService;
+
+    @Autowired
+    private IncomeService incomeService;
 
     @Autowired
     private UserService userService;
@@ -150,6 +150,8 @@ public class SaigouTimer {
                                         }
                                     }//end of for
 
+                                    //增加income记录
+                                    Integer incomeResult = incomeService.saveByVO(incomeVO);
                                     //查找所有中奖的下注记录
                                     SearchWinBetVO searchWinBetVO = new SearchWinBetVO();
                                     searchWinBetVO.initBetItemArray(incomeVO.getWin_num());
