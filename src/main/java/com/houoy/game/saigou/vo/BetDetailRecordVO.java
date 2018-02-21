@@ -57,16 +57,16 @@ public class BetDetailRecordVO extends SuperVO {
             case BetType.odd:
             case BetType.even:
                 return bet_money * periodConfig.getRateTwo();
-            case BetType.n1:
-            case BetType.n2:
-            case BetType.n3:
-            case BetType.n4:
-            case BetType.n5:
-            case BetType.n6:
-            case BetType.n7:
-            case BetType.n8:
-            case BetType.n9:
-            case BetType.n10:
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+            case "6":
+            case "7":
+            case "8":
+            case "9":
+            case "10":
                 return bet_money * periodConfig.getRateNum();
         }
         return 0;
