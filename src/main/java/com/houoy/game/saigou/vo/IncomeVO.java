@@ -95,11 +95,50 @@ public class IncomeVO extends SuperVO {
 
     //计算下注总金额
     public Long calcTotal_bet() {
+        Long result = 0l;
         if (bet_odd != null) {
-            return bet_odd + bet_even + bet_big + bet_little +
-                    bet_1 + bet_2 + bet_3 + bet_4 + bet_5 + bet_6 + bet_7 + bet_8 + bet_9 + bet_10;
-        } else {
-            return 0l;
+            result = result + bet_odd;
         }
+        if (bet_even != null) {
+            result = result + bet_even;
+        }
+        if (bet_big != null) {
+            result = result + bet_big;
+        }
+        if (bet_little != null) {
+            result = result + bet_little;
+        }
+
+        if (bet_1 != null) {
+            result = result + bet_1;
+        }
+        if (bet_2 != null) {
+            result = result + bet_2;
+        }
+        if (bet_3 != null) {
+            result = result + bet_3;
+        }
+        if (bet_4 != null) {
+            result = result + bet_4;
+        }
+        if (bet_5 != null) {
+            result = result + bet_5;
+        }
+        if (bet_6 != null) {
+            result = result + bet_6;
+        }
+        if (bet_7 != null) {
+            result = result + bet_7;
+        }
+        if (bet_8 != null) {
+            result = result + bet_8;
+        }
+        if (bet_9 != null) {
+            result = result + bet_9;
+        }
+        if (bet_10 != null) {
+            result = result + bet_10;
+        }
+        return result;
     }
 }

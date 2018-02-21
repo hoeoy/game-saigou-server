@@ -118,7 +118,7 @@ public class BetController extends BaseController<BetDetailRecordVO, BetService>
         RequestResultVO resultVO = new RequestResultVO();
         if (CollectionUtils.isNotEmpty(vos)) {
             for (int i = 0; i < vos.size(); i++) {
-                BetDetailRecordVO vo = vos.get(0);
+                BetDetailRecordVO vo = vos.get(i);
                 resultVO = saveOne(vo);
                 if (!resultVO.getSuccess()) {
                     return resultVO;

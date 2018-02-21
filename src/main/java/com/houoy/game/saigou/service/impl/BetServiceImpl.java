@@ -4,6 +4,7 @@ import com.houoy.common.service.BaseServiceImpl;
 import com.houoy.common.vo.UserVO;
 import com.houoy.game.saigou.core.*;
 import com.houoy.game.saigou.dao.BetMapper;
+import com.houoy.game.saigou.dao.UserMapper;
 import com.houoy.game.saigou.service.BetService;
 import com.houoy.game.saigou.service.CashFlowService;
 import com.houoy.game.saigou.service.PeriodService;
@@ -30,6 +31,9 @@ public class BetServiceImpl extends BaseServiceImpl<BetMapper, BetDetailRecordVO
 
     @Autowired
     private SaigouTimer saigouTimer;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     @Autowired
@@ -88,7 +92,8 @@ public class BetServiceImpl extends BaseServiceImpl<BetMapper, BetDetailRecordVO
 
             //增加用户总积分
             userVO.setDef1(totalAfter + "");
-            Integer userResult = userService.updateUserByVO(userVO);
+            Integer userResult = userMapper.updateUserByVO(userVO);
+
             return betResult;
         } else {
             return -3;//找不到此用户

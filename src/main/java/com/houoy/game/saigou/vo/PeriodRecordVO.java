@@ -90,7 +90,7 @@ public class PeriodRecordVO extends SuperVO {
             LiveVO liveVO = new LiveVO();
             //1-8 秒  每秒每组数加50px左右
             int interval = 50;//每秒间隔
-            int range = 20;//上下20px摆动
+            int range = 40;//上下20px摆动
             for (int i = 1; i <= 3; i++) {
                 for (int m = 1; m <= 10; m++) {
                     ((List<Integer>) MethodUtils.invokeMethod(liveVO, "getM" + (m), null))

@@ -3,6 +3,7 @@ package com.houoy.game.saigou.core;
 import com.houoy.common.utils.DateUtils;
 import com.houoy.common.vo.UserVO;
 import com.houoy.game.saigou.config.PeriodConfig;
+import com.houoy.game.saigou.dao.UserMapper;
 import com.houoy.game.saigou.service.BetService;
 import com.houoy.game.saigou.service.CashFlowService;
 import com.houoy.game.saigou.service.PeriodService;
@@ -39,7 +40,8 @@ public class SaigouTimer {
 
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private UserMapper userMapper;
     @Autowired
     private BetService betService;
 
@@ -89,7 +91,7 @@ public class SaigouTimer {
                             String code = period.getPeriodAggVO().getPeriod_code();
                             PeriodRecordVO periodRecordVO = periodService.retrieveByCode(code);
                             int win_num = -1;//第一名号码
-                            if (periodRecordVO != null && periodRecordVO.getF1()==null) {//不能重复开奖，只要一开奖，f1就不为null
+                            if (periodRecordVO != null && periodRecordVO.getF1() == null) {//不能重复开奖，只要一开奖，f1就不为null
                                 //获得本期所有下注的积分概况
                                 IncomeVO incomeVO = betService.retrieveSumByPeriodPK(periodRecordVO.getPk_period());
                                 if (incomeVO != null) {
@@ -100,35 +102,44 @@ public class SaigouTimer {
                                     incomeVO.setRateTwo(periodConfig.getRateTwo());
                                     incomeVO.setOdds(periodConfig.getOdds());
 
+                                    //数字
+                                    double recentWin = incomeVO.getTotal_bet() * incomeVO.getOdds();//需要盈利多少钱
+                                    double nearest = 100000000;//每个号盈利与目标盈利的差值，取差值最近的开奖
                                     //设置每个号码庄家佩服金额，遍历十个号码，计算庄家的收益,
                                     for (int i = 1; i <= 10; i++) {
-                                        Double oddEvenOut = null;//单双赔多少
-                                        Double bigLittleOut = null;//大小赔多少
-                                        Double oneOut = null;//数字赔多少
+                                        Double oddEvenOut = 0.0;//单双赔多少
+                                        Double bigLittleOut = 0.0;//大小赔多少
+                                        Double oneOut = 0.0;//数字赔多少
                                         if (i % 2 == 0) {//双数
-                                            oddEvenOut = incomeVO.getBet_even() * periodConfig.getRateTwo();//双数赔多少钱
+                                            if (incomeVO.getBet_even() != null) {
+                                                oddEvenOut = incomeVO.getBet_even() * periodConfig.getRateTwo();//双数赔多少钱
+                                            }
                                         } else {//单数
-                                            oddEvenOut = incomeVO.getBet_odd() * periodConfig.getRateTwo();//单数数赔多少钱
+                                            if (incomeVO.getBet_odd() != null) {
+                                                oddEvenOut = incomeVO.getBet_odd() * periodConfig.getRateTwo();//单数数赔多少钱
+                                            }
                                         }
 
                                         if (i > 5) {//大
-                                            bigLittleOut = incomeVO.getBet_big() * periodConfig.getRateTwo();//大赔多少钱
+                                            if (incomeVO.getBet_big() != null) {
+                                                bigLittleOut = incomeVO.getBet_big() * periodConfig.getRateTwo();//大赔多少钱
+                                            }
                                         } else {//小
-                                            bigLittleOut = incomeVO.getBet_little() * periodConfig.getRateTwo();//小赔多少钱
+                                            if (incomeVO.getBet_little() != null) {
+                                                bigLittleOut = incomeVO.getBet_little() * periodConfig.getRateTwo();//小赔多少钱
+                                            }
                                         }
 
-                                        //数字
-                                        double recentWin = incomeVO.getTotal_win() * incomeVO.getOdds();//需要盈利多少钱
-                                        double nearest = 100000000;//每个号盈利与目标盈利的差值，取差值最近的开奖
-                                        double win = 0;
-                                        double pei = 0;
+                                        Object numBet = MethodUtils.invokeMethod(incomeVO, "getBet_" + i, null);
+                                        if (numBet != null) {
+                                            Long bet = (Long) numBet;
+                                            oneOut = bet * periodConfig.getRateNum();//数字赔多少钱
+                                        }
 
-                                        Long bet = (Long) MethodUtils.invokeMethod(incomeVO, "getBet_" + i, null);
-                                        oneOut = bet * periodConfig.getRateNum();//数字赔多少钱
-                                        pei = oneOut + oddEvenOut + bigLittleOut;//此数字开奖，共赔多少
-                                        win = incomeVO.getTotal_bet() - pei;//此数字开奖，共盈利多少，负数：庄家赔钱
-                                        MethodUtils.invokeMethod(incomeVO, "setBet_" + i, (long) win);
-                                        if (win > 0) {//盈利必须为正数。
+                                        double pei = oneOut + oddEvenOut + bigLittleOut;//此数字开奖，共赔多少
+                                        double win = incomeVO.getTotal_bet() - pei;//此数字开奖，共盈利多少，负数：庄家赔钱
+                                        MethodUtils.invokeMethod(incomeVO, "setWin_" + i, (long) win);
+                                        if (win >= 0) {//盈利不能为负数。
                                             if (Math.abs(win - recentWin) < nearest) {//实际盈利与目标盈利差值小于最小差值
                                                 nearest = Math.abs(win - recentWin);
                                                 //设置开哪个号码,庄家本期收益
@@ -175,14 +186,15 @@ public class SaigouTimer {
 
                                     //增加用户表的积分
                                     for (String key : users.keySet()) {
-                                        Integer userResult = userService.updateUserByVO(users.get(key));
+                                        Integer userResult = userMapper.updateUserByVO(users.get(key));
+//                                        Integer userResult = userService.updateUserByVO(users.get(key));
                                     }
 
                                     //更新bet表的win状态
                                     betService.updateWinByPeriodPkAndItem(searchWinBetVO);
                                 } else {
                                     //TODO 本期没有下注记录,任意号码开奖
-                                    win_num = new Random().nextInt(10)+1;
+                                    win_num = new Random().nextInt(10) + 1;
                                 }
 
                                 //更新名次和动画属性

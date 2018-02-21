@@ -39,15 +39,15 @@
         </if>
     </sql>
     <sql id="ifSet">
-        <if test="essay_code != null">essay_code=#{essay_code},</if>
+        <if test="essay_code != null and essay_code!=''">essay_code=#{essay_code},</if>
         <if test="essay_name != null">essay_name=#{essay_name},</if>
         <if test="essay_subname != null">essay_subname=#{essay_subname},</if>
         <if test="essay_content != null">essay_content=#{essay_content},</if>
-        <if test="ts_start != null">ts_start=#{ts_start},</if>
-        <if test="ts_end != null">ts_end=#{ts_end},</if>
-        <if test="pk_type != null">pk_type=#{pk_type},</if>
+        <if test="ts_start != null and ts_start!=''">ts_start=#{ts_start},</if>
+        <if test="ts_end != null and ts_end!=''">ts_end=#{ts_end},</if>
+        <if test="pk_type != null and pk_type!=''">pk_type=#{pk_type},</if>
         <if test="is_publish != null">is_publish=#{is_publish},</if>
-        <if test="pk_person != null">pk_person=#{pk_person},</if>
+        <if test="pk_person != null and pk_person!=''">pk_person=#{pk_person},</if>
         <if test="person_name != null">person_name=#{person_name},</if>
         <if test="path_thumbnail != null">path_thumbnail=#{path_thumbnail},</if>
     </sql>
