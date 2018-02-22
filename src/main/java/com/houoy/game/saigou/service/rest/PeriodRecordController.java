@@ -52,6 +52,7 @@ public class PeriodRecordController extends BaseController<PeriodRecordVO, Perio
         if (winNum < 1 || winNum > 10) {
             result.setCode(ResultCode.ERROR_PARAMETER);
             result.setMsg("号码必须大于0小于10的整数");
+            result.setContent("号码必须大于0小于10的整数");
             return result;
         }
 
