@@ -32,7 +32,7 @@ public class SettingController {
         return rateVO;
     }
 
-    @ApiOperation(value = "设置赔率参数")
+    @ApiOperation(value = "设置赔率参数",hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "rateVO", value = "赔率信息", required = true, paramType = "body", dataType = "RateVO")
     })
