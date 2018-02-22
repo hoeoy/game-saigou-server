@@ -77,7 +77,8 @@ public class IncomeVO extends SuperVO {
     private Long total_win;
     @ApiModelProperty(value = "最终开奖的号码", example = "3", hidden = false)
     private Integer win_num;
-
+    @ApiModelProperty(value = "开奖方式，0 或者 null 系统自动开奖  1 管理员手动开奖", example = "1", hidden = false)
+    private Integer win_type;
     @Override
     public String getPKField() {
         return "pk_income";

@@ -106,6 +106,16 @@ public class BetServiceImpl extends BaseServiceImpl<BetMapper, BetDetailRecordVO
     }
 
     @Override
+    public List<UserIncomeVO> retrieveUserSumByPeriodAndUser(UserIncomeVO userIncomeVO) {
+        return mapper.retrieveUserSumByPeriodAndUser(userIncomeVO);
+    }
+
+    @Override
+    public Long retrieveUserSumByPeriodAndUserCount(UserIncomeVO userIncomeVO) {
+        return mapper.retrieveUserSumByPeriodAndUserCount(userIncomeVO);
+    }
+
+    @Override
     public List<BetDetailRecordVO> retrieveAllByPeriodPkAndItem(SearchWinBetVO searchWinBetVO) {
         return mapper.retrieveAllByPeriodPkAndItem(searchWinBetVO);
     }

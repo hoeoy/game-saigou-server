@@ -1,11 +1,15 @@
 package com.houoy.game.saigou.service.rest;
 
+import com.houoy.common.utils.JqueryDataTablesUtil;
+import com.houoy.common.vo.JquryDataTablesVO;
 import com.houoy.common.vo.PageResultVO;
 import com.houoy.common.vo.RequestResultVO;
+import com.houoy.common.vo.SuperVO;
 import com.houoy.common.web.BaseController;
+import com.houoy.game.saigou.core.SaigouTimer;
 import com.houoy.game.saigou.service.BetService;
-import com.houoy.game.saigou.vo.BetDetailRecordVO;
-import com.houoy.game.saigou.vo.SearchWinBetVO;
+import com.houoy.game.saigou.service.PeriodService;
+import com.houoy.game.saigou.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -14,12 +18,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +32,13 @@ import java.util.List;
 @Api(description = "下注，获取下注记录，获取中奖记录")
 public class BetController extends BaseController<BetDetailRecordVO, BetService> {
     private static final Log logger = LogFactory.getLog(BetController.class);
+
+
+    @Autowired
+    private SaigouTimer saigouTimer;
+
+    @Autowired
+    private PeriodService periodService;
 
     @Override
     @Autowired
@@ -137,6 +146,40 @@ public class BetController extends BaseController<BetDetailRecordVO, BetService>
     @PostMapping(value = "retrieve")
     public PageResultVO retrieve(@RequestBody BetDetailRecordVO vo, HttpServletRequest request) {
         return super.retrieve(vo, request);
+    }
+
+    @ApiOperation(value = "本期当前时间下注概况",hidden = true)
+    @GetMapping(value = "/retrieveSumByPeriodPK")
+    public JquryDataTablesVO<IncomeVO> retrieveSumByPeriodPK(HttpServletRequest request) {
+        String code = saigouTimer.getPeriod().getPeriodAggVO().getPeriod_code();
+        PeriodRecordVO periodRecordVO = periodService.retrieveByCode(code);
+        IncomeVO incomeVO = service.retrieveSumByPeriodPK(periodRecordVO.getPk_period());
+        if(incomeVO==null){
+            incomeVO = new IncomeVO();
+        }
+        Long count = 1l;
+
+        List<IncomeVO> result = new ArrayList();
+        result.add(incomeVO);
+        JquryDataTablesVO rtv = JqueryDataTablesUtil.madeJqueryDatatablesVO(count, result);
+        return rtv;
+    }
+
+    @ApiOperation(value = "本期当前时间代理下注概览",hidden = true)
+    @GetMapping(value = "/retrieveUserSumByPeriodAndUser")
+    public JquryDataTablesVO<UserIncomeVO> retrieveUserSumByPeriodAndUser(UserIncomeVO vo ,HttpServletRequest request) {
+        vo = (UserIncomeVO) JqueryDataTablesUtil.filterParam(vo, request);
+
+        String code = saigouTimer.getPeriod().getPeriodAggVO().getPeriod_code();
+        PeriodRecordVO periodRecordVO = periodService.retrieveByCode(code);
+//        vo.setPk_period("1721");
+        vo.setPk_period(periodRecordVO.getPk_period());
+
+        List<UserIncomeVO> result = service.retrieveUserSumByPeriodAndUser(vo);
+        Long count = service.retrieveUserSumByPeriodAndUserCount(vo);
+
+        JquryDataTablesVO rtv = JqueryDataTablesUtil.madeJqueryDatatablesVO(count, result);
+        return rtv;
     }
 
     @ApiOperation(value = "测试retrieveAllByPeriodPkAndItem", hidden = true)

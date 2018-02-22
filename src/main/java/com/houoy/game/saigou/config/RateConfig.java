@@ -1,5 +1,6 @@
 package com.houoy.game.saigou.config;
 
+import com.houoy.game.saigou.vo.RateVO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,14 +13,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Configuration
-@ConfigurationProperties(prefix = "period")
+@ConfigurationProperties(prefix = "rate")
 @EnableConfigurationProperties
 @Data
 @NoArgsConstructor
-public class PeriodConfig {
-    private String startTime;//每天几点开始开场
-    private String endTime;//每天几点结束关门
-    private Integer durationSecond;//每期持续多长时间
-    private Integer stopSecond;//每期剩余多长时间开始封盘
-    private Integer showSecond;//每期剩余多长时间开始播放动画
+public class RateConfig {
+    private RateVO rateVO;
 }

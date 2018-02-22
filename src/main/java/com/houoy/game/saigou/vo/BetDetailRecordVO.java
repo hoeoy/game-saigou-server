@@ -1,7 +1,6 @@
 package com.houoy.game.saigou.vo;
 
 import com.houoy.common.vo.SuperVO;
-import com.houoy.game.saigou.config.PeriodConfig;
 import com.houoy.game.saigou.core.BetType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -50,13 +49,13 @@ public class BetDetailRecordVO extends SuperVO {
         return pk_bet;
     }
 
-    public double calcWinMoney(PeriodConfig periodConfig) {
+    public double calcWinMoney(double rateTwo, double rateNum) {
         switch (bet_item) {
             case BetType.big:
             case BetType.little:
             case BetType.odd:
             case BetType.even:
-                return bet_money * periodConfig.getRateTwo();
+                return bet_money * rateTwo;
             case "1":
             case "2":
             case "3":
@@ -67,7 +66,7 @@ public class BetDetailRecordVO extends SuperVO {
             case "8":
             case "9":
             case "10":
-                return bet_money * periodConfig.getRateNum();
+                return bet_money * rateNum;
         }
         return 0;
     }

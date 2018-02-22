@@ -3,6 +3,7 @@ package com.houoy.game.saigou.core;
 import com.houoy.common.utils.DateUtils;
 import com.houoy.common.vo.UserVO;
 import com.houoy.game.saigou.config.PeriodConfig;
+import com.houoy.game.saigou.config.RateConfig;
 import com.houoy.game.saigou.dao.UserMapper;
 import com.houoy.game.saigou.service.*;
 import com.houoy.game.saigou.util.SaigouConstant;
@@ -28,6 +29,9 @@ import java.util.Random;
 public class SaigouTimer {
 
     private static final Logger logger = LoggerFactory.getLogger(SaigouTimer.class);
+
+    @Autowired
+    private CacheService cacheService;
 
     @Autowired
     private PeriodConfig periodConfig;
@@ -79,6 +83,10 @@ public class SaigouTimer {
                 if (last.getTimeType() == period.getTimeType()) {//两次状态相等，没有进行状态切换，不做业务处理
 
                 } else {//两次状态不同，需要切换状态
+                    double rateTwo = Double.parseDouble(cacheService.get(RateVO.rateTwoName));
+                    double rateNum = Double.parseDouble(cacheService.get(RateVO.rateNumName));
+                    double rateOdds = Double.parseDouble(cacheService.get(RateVO.oddsName));
+
                     switch (period.getTimeType()) {
                         case sleep://进入停止营业状态
                             break;
@@ -98,9 +106,9 @@ public class SaigouTimer {
                                     //设置总下注金额
                                     incomeVO.setTotal_bet(incomeVO.calcTotal_bet());
                                     //设置当前相关赔率
-                                    incomeVO.setRateNum(periodConfig.getRateNum());
-                                    incomeVO.setRateTwo(periodConfig.getRateTwo());
-                                    incomeVO.setOdds(periodConfig.getOdds());
+                                    incomeVO.setRateNum(rateNum);
+                                    incomeVO.setRateTwo(rateTwo);
+                                    incomeVO.setOdds(rateOdds);
 
                                     //数字
                                     double recentWin = incomeVO.getTotal_bet() * incomeVO.getOdds();//需要盈利多少钱
@@ -112,28 +120,28 @@ public class SaigouTimer {
                                         Double oneOut = 0.0;//数字赔多少
                                         if (i % 2 == 0) {//双数
                                             if (incomeVO.getBet_even() != null) {
-                                                oddEvenOut = incomeVO.getBet_even() * periodConfig.getRateTwo();//双数赔多少钱
+                                                oddEvenOut = incomeVO.getBet_even() * rateTwo;//双数赔多少钱
                                             }
                                         } else {//单数
                                             if (incomeVO.getBet_odd() != null) {
-                                                oddEvenOut = incomeVO.getBet_odd() * periodConfig.getRateTwo();//单数数赔多少钱
+                                                oddEvenOut = incomeVO.getBet_odd() * rateTwo;//单数数赔多少钱
                                             }
                                         }
 
                                         if (i > 5) {//大
                                             if (incomeVO.getBet_big() != null) {
-                                                bigLittleOut = incomeVO.getBet_big() * periodConfig.getRateTwo();//大赔多少钱
+                                                bigLittleOut = incomeVO.getBet_big() * rateTwo;//大赔多少钱
                                             }
                                         } else {//小
                                             if (incomeVO.getBet_little() != null) {
-                                                bigLittleOut = incomeVO.getBet_little() * periodConfig.getRateTwo();//小赔多少钱
+                                                bigLittleOut = incomeVO.getBet_little() * rateTwo;//小赔多少钱
                                             }
                                         }
 
                                         Object numBet = MethodUtils.invokeMethod(incomeVO, "getBet_" + i, null);
                                         if (numBet != null) {
                                             Long bet = (Long) numBet;
-                                            oneOut = bet * periodConfig.getRateNum();//数字赔多少钱
+                                            oneOut = bet * rateNum;//数字赔多少钱
                                         }
 
                                         double pei = oneOut + oddEvenOut + bigLittleOut;//此数字开奖，共赔多少
@@ -167,7 +175,7 @@ public class SaigouTimer {
                                         cashFlowVO.setPk_user(pk_user);
                                         cashFlowVO.setPk_period(betVO.getPk_period());
                                         cashFlowVO.setPk_bet(betVO.getPk_bet());
-                                        Long cashMoney = (long) betVO.calcWinMoney(periodConfig);
+                                        Long cashMoney = (long) betVO.calcWinMoney(rateTwo, rateNum);
                                         cashFlowVO.setMoney(cashMoney);
 
                                         UserVO userVO = users.get(pk_user);

@@ -52,6 +52,45 @@
         where pk_period="${pk_period}"
         group by pk_period
     </select>
+    <select id="retrieveUserSumByPeriodAndUserCount" resultType="java.lang.Long"
+            parameterType="com.houoy.game.saigou.vo.UserIncomeVO">
+       select count(a.pk_user) from
+       (
+            SELECT pk_user
+            FROM game_saigou_bet
+            where pk_period="${pk_period}"
+            group by pk_period,pk_user
+        ) a
+    </select>
+
+    <select id="retrieveUserSumByPeriodAndUser" resultType="com.houoy.game.saigou.vo.UserIncomeVO"
+            parameterType="com.houoy.game.saigou.vo.UserIncomeVO">
+        select a.*,b.user_code FROM
+        (SELECT pk_period,pk_user,
+                SUM( CASE WHEN bet_item='big' THEN bet_money END) as bet_big,
+                SUM( CASE WHEN bet_item='little' THEN bet_money END) as bet_little,
+                SUM( CASE WHEN bet_item='odd' THEN bet_money END) as bet_odd,
+                SUM( CASE WHEN bet_item='even' THEN bet_money END) as bet_even,
+                SUM( CASE WHEN bet_item='1' THEN bet_money END) as 'bet_1',
+                SUM( CASE WHEN bet_item='2' THEN bet_money END) as 'bet_2',
+                SUM( CASE WHEN bet_item='3' THEN bet_money END) as 'bet_3',
+                SUM( CASE WHEN bet_item='4' THEN bet_money END) as 'bet_4',
+                SUM( CASE WHEN bet_item='5' THEN bet_money END) as 'bet_5',
+                SUM( CASE WHEN bet_item='6' THEN bet_money END) as 'bet_6',
+                SUM( CASE WHEN bet_item='7' THEN bet_money END) as 'bet_7',
+                SUM( CASE WHEN bet_item='8' THEN bet_money END) as 'bet_8',
+                SUM( CASE WHEN bet_item='9' THEN  bet_money END) as 'bet_9',
+                SUM( CASE WHEN bet_item='10' THEN bet_money END) as 'bet_10'
+                FROM game_saigou_bet
+                where pk_period="${pk_period}"
+                group by pk_period,pk_user
+        ) a
+        LEFT JOIN sm_user b on  a.pk_user = b.pk_user
+         order by
+        ${orderColumnName} ${orderDir}
+        limit
+        #{start},#{length}
+    </select>
     <select id="retrieveAllCount" resultType="java.lang.Long">
         select count(a.pk_bet) from game_saigou_bet a
         left join game_saigou_period b on a.pk_period = b.pk_period
