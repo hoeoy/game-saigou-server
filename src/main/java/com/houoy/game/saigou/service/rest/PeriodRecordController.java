@@ -42,6 +42,32 @@ public class PeriodRecordController extends BaseController<PeriodRecordVO, Perio
         service = _service;
     }
 
+    @ApiOperation(value = "设置本期开奖号码",hidden = true)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "winNum", value = "开奖记录信息", required = true, paramType = "query", dataType = "int")
+    })
+    @PostMapping("/setWinNum")
+    public Result setWinNum(Integer winNum) {
+        Result result = new Result();
+        if (winNum < 1 || winNum > 10) {
+            result.setCode(ResultCode.ERROR_PARAMETER);
+            result.setMsg("号码必须大于0小于10的整数");
+            return result;
+        }
+
+        Period period = saigouTimer.getPeriod();
+        PeriodAggVO periodAggVO = period.getPeriodAggVO();
+
+        if (periodAggVO != null) {//晚上停止营业时间为null
+            saigouTimer.winByHandMap.put(periodAggVO.getPeriod_code(), winNum);
+        }
+
+        result.setCode(ResultCode.SUCCESS);
+        result.setContent("设置成功");
+        result.setMsg("succcess");
+        return result;
+    }
+
     @Override
     @ApiOperation(value = "增加开奖记录(保存)", hidden = true)
     @ApiImplicitParams({

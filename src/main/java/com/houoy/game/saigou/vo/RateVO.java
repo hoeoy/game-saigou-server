@@ -14,7 +14,7 @@ public class RateVO {
     public static final String rateTwoName = "rateTwo";
     public static final String rateNumName = "rateNum";
 
-    private Double odds;
+    private Double odds;//庄家收益率
     @ApiModelProperty(value = "大小单双的赔率", hidden = false)
     private Double rateTwo;//大小单双的赔率
     @ApiModelProperty(value = "单独号码的赔率", hidden = false)

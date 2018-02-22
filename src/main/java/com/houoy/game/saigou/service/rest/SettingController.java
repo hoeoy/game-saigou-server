@@ -32,7 +32,7 @@ public class SettingController {
         return rateVO;
     }
 
-    @ApiOperation(value = "设置赔率参数",hidden = true)
+    @ApiOperation(value = "设置赔率参数", hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "rateVO", value = "赔率信息", required = true, paramType = "body", dataType = "RateVO")
     })
@@ -44,25 +44,31 @@ public class SettingController {
             Double rateNum = rateVO.getRateNum();
             Double rateTwo = rateVO.getRateTwo();
 
-            if (odds != null && odds > 0 && odds <= 1) {
-                cacheService.set(RateVO.oddsName, odds + "");
-            } else {
-                resultVO.setSuccess(false);
-                resultVO.setMsg("odds应大于0小于1");
+            if (odds != null) {
+                if (odds > 0 && odds <= 1) {
+                    cacheService.set(RateVO.oddsName, odds + "");
+                } else {
+                    resultVO.setSuccess(false);
+                    resultVO.setMsg("odds应大于0小于1");
+                }
             }
 
-            if (rateNum != null && rateNum > 0 && rateNum < 10) {
-                cacheService.set(RateVO.rateNumName, rateNum + "");
-            } else {
-                resultVO.setSuccess(false);
-                resultVO.setMsg("rateNum应大于0小于10");
+            if (rateNum != null) {
+                if (rateNum > 0 && rateNum < 10) {
+                    cacheService.set(RateVO.rateNumName, rateNum + "");
+                } else {
+                    resultVO.setSuccess(false);
+                    resultVO.setMsg("rateNum应大于0小于10");
+                }
             }
 
-            if (rateTwo != null && rateTwo > 0 && rateTwo < 2) {
-                cacheService.set(RateVO.rateTwoName, rateTwo + "");
-            } else {
-                resultVO.setSuccess(false);
-                resultVO.setMsg("rateTwo应大于0小于2");
+            if (rateTwo != null) {
+                if (rateTwo > 0 && rateTwo < 2) {
+                    cacheService.set(RateVO.rateTwoName, rateTwo + "");
+                } else {
+                    resultVO.setSuccess(false);
+                    resultVO.setMsg("rateTwo应大于0小于2");
+                }
             }
         }
         resultVO.setSuccess(true);

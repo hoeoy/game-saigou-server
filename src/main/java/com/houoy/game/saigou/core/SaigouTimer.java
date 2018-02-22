@@ -3,7 +3,6 @@ package com.houoy.game.saigou.core;
 import com.houoy.common.utils.DateUtils;
 import com.houoy.common.vo.UserVO;
 import com.houoy.game.saigou.config.PeriodConfig;
-import com.houoy.game.saigou.config.RateConfig;
 import com.houoy.game.saigou.dao.UserMapper;
 import com.houoy.game.saigou.service.*;
 import com.houoy.game.saigou.util.SaigouConstant;
@@ -57,6 +56,9 @@ public class SaigouTimer {
 
     private Period period;//本次的状态
     private Period last;//上次的状态
+
+    //手动开奖的时候key：period_code     value是号码
+    public Map<String, Integer> winByHandMap = new HashedMap();
 
     public Period getPeriod() {
         return period;
@@ -150,13 +152,26 @@ public class SaigouTimer {
                                         if (win >= 0) {//盈利不能为负数。
                                             if (Math.abs(win - recentWin) < nearest) {//实际盈利与目标盈利差值小于最小差值
                                                 nearest = Math.abs(win - recentWin);
-                                                //设置开哪个号码,庄家本期收益
-                                                incomeVO.setTotal_win((long) win);
-                                                incomeVO.setWin_num(i);
+//                                                //设置开哪个号码,庄家本期收益
+//                                                incomeVO.setTotal_win((long) win);
+//                                                incomeVO.setWin_num(i);
                                                 win_num = i;
                                             }
                                         }
                                     }//end of for
+
+                                    if (winByHandMap.size() > 0) {//号码为庄家手动定义的
+                                        Integer wn = winByHandMap.get(period.getPeriodAggVO().getPeriod_code());//获得手动设置的wn
+                                        if (wn != null) {
+                                            win_num = wn;
+                                        }
+                                    }
+                                    winByHandMap.clear();
+
+                                    //设置开哪个号码,庄家本期收益
+                                    Long nw = (Long) MethodUtils.invokeMethod(incomeVO, "getWin_" + win_num, null);
+                                    incomeVO.setTotal_win(nw);
+                                    incomeVO.setWin_num(win_num);
 
                                     //增加income记录
                                     Integer incomeResult = incomeService.saveByVO(incomeVO);
