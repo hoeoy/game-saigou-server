@@ -160,10 +160,12 @@ public class SaigouTimer {
                                         }
                                     }//end of for
 
+                                    Integer win_type = 0;
                                     if (winByHandMap.size() > 0) {//号码为庄家手动定义的
                                         Integer wn = winByHandMap.get(period.getPeriodAggVO().getPeriod_code());//获得手动设置的wn
                                         if (wn != null) {
                                             win_num = wn;
+                                            win_type = 1;
                                         }
                                     }
                                     winByHandMap.clear();
@@ -172,6 +174,8 @@ public class SaigouTimer {
                                     Long nw = (Long) MethodUtils.invokeMethod(incomeVO, "getWin_" + win_num, null);
                                     incomeVO.setTotal_win(nw);
                                     incomeVO.setWin_num(win_num);
+                                    incomeVO.setWin_type(win_type);
+                                    incomeVO.setDate(DateUtils.currentDate());
 
                                     //增加income记录
                                     Integer incomeResult = incomeService.saveByVO(incomeVO);
@@ -218,8 +222,16 @@ public class SaigouTimer {
                                     //更新bet表的win状态
                                     betService.updateWinByPeriodPkAndItem(searchWinBetVO);
                                 } else {
-                                    //TODO 本期没有下注记录,任意号码开奖
-                                    win_num = new Random().nextInt(10) + 1;
+                                    //TODO 本期没有下注记录,如果用户手动设定开用户的，否则开任意号码
+                                    if (winByHandMap.size() > 0) {//号码为庄家手动定义的
+                                        Integer wn = winByHandMap.get(period.getPeriodAggVO().getPeriod_code());//获得手动设置的wn
+                                        if (wn != null) {
+                                            win_num = wn;
+                                        }
+                                    }else{
+                                        win_num = new Random().nextInt(10) + 1;
+                                    }
+                                    winByHandMap.clear();
                                 }
 
                                 //更新名次和动画属性

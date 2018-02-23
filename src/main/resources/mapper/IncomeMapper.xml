@@ -30,16 +30,39 @@
         #{start},#{length}
     </select>
 
+    <select id="retrieveAggAllCount" resultType="java.lang.Long">
+        select count(DISTINCT(date)) from game_saigou_income
+        <where>
+            <if test="date!=null and date!=''">
+                and date like "%${date}%"
+            </if>
+        </where>
+    </select>
+
+    <select id="retrieveAggAllWithPage" resultType="com.houoy.game.saigou.vo.IncomeAggVO">
+        select date,date ts ,sum(total_bet) as bet ,sum(total_win) as win from game_saigou_income
+        <where>
+            <if test="date!=null and date!=''">
+                and date like "%${date}%"
+            </if>
+        </where>
+        group by date
+        order by
+        ${orderColumnName} ${orderDir}
+        limit
+        #{start},#{length}
+    </select>
+
     <insert id="saveByVO" parameterType="com.houoy.game.saigou.vo.IncomeVO">
         insert into game_saigou_income(pk_period,bet_odd,bet_even,bet_big,bet_little,
         bet_1,bet_2,bet_3,bet_4,bet_5,bet_6,bet_7,bet_8,bet_9,bet_10,
         win_1,win_2,win_3,win_4,win_5,win_6,win_7,win_8,win_9,win_10,
-        odds,win_num,rateTwo,rateNum,total_bet,total_win)
+        odds,win_num,rateTwo,rateNum,total_bet,total_win,date)
         values
         (#{pk_period},#{bet_odd},#{bet_even},#{bet_big},#{bet_little},
         #{bet_1},#{bet_2},#{bet_3},#{bet_4},#{bet_5},#{bet_6},#{bet_7},#{bet_8},#{bet_9},#{bet_10},
         #{win_1},#{win_2},#{win_3},#{win_4},#{win_5},#{win_6},#{win_7},#{win_8},#{win_9},#{win_10},
-        #{odds}, #{win_num},#{rateTwo}, #{rateNum},#{total_bet}, #{total_win})
+        #{odds}, #{win_num},#{rateTwo}, #{rateNum},#{total_bet}, #{total_win}, #{date})
     </insert>
 
     <update id="updateByVO">

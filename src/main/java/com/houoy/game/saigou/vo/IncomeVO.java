@@ -79,6 +79,8 @@ public class IncomeVO extends SuperVO {
     private Integer win_num;
     @ApiModelProperty(value = "开奖方式，0 或者 null 系统自动开奖  1 管理员手动开奖", example = "1", hidden = false)
     private Integer win_type;
+    @ApiModelProperty(value = "日期", example = "2018-02-18", hidden = false)
+    private String date;
     @Override
     public String getPKField() {
         return "pk_income";

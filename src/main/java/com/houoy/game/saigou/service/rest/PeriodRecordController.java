@@ -5,6 +5,7 @@ import com.houoy.common.vo.RequestResultVO;
 import com.houoy.common.web.BaseController;
 import com.houoy.game.saigou.core.Period;
 import com.houoy.game.saigou.core.SaigouTimer;
+import com.houoy.game.saigou.core.TimeType;
 import com.houoy.game.saigou.service.PeriodService;
 import com.houoy.game.saigou.vo.PeriodAggVO;
 import com.houoy.game.saigou.vo.PeriodRecordVO;
@@ -42,7 +43,7 @@ public class PeriodRecordController extends BaseController<PeriodRecordVO, Perio
         service = _service;
     }
 
-    @ApiOperation(value = "设置本期开奖号码",hidden = true)
+    @ApiOperation(value = "设置本期开奖号码", hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "winNum", value = "开奖记录信息", required = true, paramType = "query", dataType = "int")
     })
@@ -60,7 +61,14 @@ public class PeriodRecordController extends BaseController<PeriodRecordVO, Perio
         PeriodAggVO periodAggVO = period.getPeriodAggVO();
 
         if (periodAggVO != null) {//晚上停止营业时间为null
-            saigouTimer.winByHandMap.put(periodAggVO.getPeriod_code(), winNum);
+            if (period.getTimeType().equals(TimeType.run_bet)) {//只有下注时间才可以更改号码
+                saigouTimer.winByHandMap.put(periodAggVO.getPeriod_code(), winNum);
+            } else {
+                result.setCode(ResultCode.ERROR_PARAMETER);
+                result.setMsg("本期已经封盘，无法修改开奖号码");
+                result.setContent("本期已经封盘，无法修改开奖号码");
+                return result;
+            }
         }
 
         result.setCode(ResultCode.SUCCESS);
@@ -97,7 +105,9 @@ public class PeriodRecordController extends BaseController<PeriodRecordVO, Perio
 
         if (periodAggVO != null) {//晚上停止营业时间为null
             PeriodRecordVO vo = service.retrieveByCode(periodAggVO.getPeriod_code());
-            periodAggVO.setPk_period(vo.getPk_period());//设置pk值
+            if (vo != null) {
+                periodAggVO.setPk_period(vo.getPk_period());//设置pk值
+            }
         }
 
         Result<PeriodAggVO> result = new Result();
