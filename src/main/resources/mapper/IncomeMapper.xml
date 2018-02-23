@@ -57,12 +57,12 @@
         insert into game_saigou_income(pk_period,bet_odd,bet_even,bet_big,bet_little,
         bet_1,bet_2,bet_3,bet_4,bet_5,bet_6,bet_7,bet_8,bet_9,bet_10,
         win_1,win_2,win_3,win_4,win_5,win_6,win_7,win_8,win_9,win_10,
-        odds,win_num,rateTwo,rateNum,total_bet,total_win,date)
+        odds,win_num,rateTwo,rateNum,total_bet,total_win,date,win_type)
         values
         (#{pk_period},#{bet_odd},#{bet_even},#{bet_big},#{bet_little},
         #{bet_1},#{bet_2},#{bet_3},#{bet_4},#{bet_5},#{bet_6},#{bet_7},#{bet_8},#{bet_9},#{bet_10},
         #{win_1},#{win_2},#{win_3},#{win_4},#{win_5},#{win_6},#{win_7},#{win_8},#{win_9},#{win_10},
-        #{odds}, #{win_num},#{rateTwo}, #{rateNum},#{total_bet}, #{total_win}, #{date})
+        #{odds}, #{win_num},#{rateTwo}, #{rateNum},#{total_bet}, #{total_win}, #{date}, #{win_type})
     </insert>
 
     <update id="updateByVO">
