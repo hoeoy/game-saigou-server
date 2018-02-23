@@ -4,7 +4,6 @@ import com.houoy.common.utils.JqueryDataTablesUtil;
 import com.houoy.common.vo.JquryDataTablesVO;
 import com.houoy.common.vo.PageResultVO;
 import com.houoy.common.vo.RequestResultVO;
-import com.houoy.common.vo.SuperVO;
 import com.houoy.common.web.BaseController;
 import com.houoy.game.saigou.core.SaigouTimer;
 import com.houoy.game.saigou.service.BetService;
@@ -148,15 +147,16 @@ public class BetController extends BaseController<BetDetailRecordVO, BetService>
         return super.retrieve(vo, request);
     }
 
-    @ApiOperation(value = "本期当前时间下注概况",hidden = true)
+    @ApiOperation(value = "本期当前时间下注概况", hidden = true)
     @GetMapping(value = "/retrieveSumByPeriodPK")
     public JquryDataTablesVO<IncomeVO> retrieveSumByPeriodPK(HttpServletRequest request) {
         String code = saigouTimer.getPeriod().getPeriodAggVO().getPeriod_code();
         PeriodRecordVO periodRecordVO = periodService.retrieveByCode(code);
         IncomeVO incomeVO = service.retrieveSumByPeriodPK(periodRecordVO.getPk_period());
-        if(incomeVO==null){
+        if (incomeVO == null) {
             incomeVO = new IncomeVO();
         }
+        incomeVO.setTotal_bet(incomeVO.calcTotal_bet());
         Long count = 1l;
 
         List<IncomeVO> result = new ArrayList();
@@ -165,9 +165,9 @@ public class BetController extends BaseController<BetDetailRecordVO, BetService>
         return rtv;
     }
 
-    @ApiOperation(value = "本期当前时间代理下注概览",hidden = true)
+    @ApiOperation(value = "本期当前时间代理下注概览", hidden = true)
     @GetMapping(value = "/retrieveUserSumByPeriodAndUser")
-    public JquryDataTablesVO<UserIncomeVO> retrieveUserSumByPeriodAndUser(UserIncomeVO vo ,HttpServletRequest request) {
+    public JquryDataTablesVO<UserIncomeVO> retrieveUserSumByPeriodAndUser(UserIncomeVO vo, HttpServletRequest request) {
         vo = (UserIncomeVO) JqueryDataTablesUtil.filterParam(vo, request);
 
         String code = saigouTimer.getPeriod().getPeriodAggVO().getPeriod_code();
@@ -176,6 +176,9 @@ public class BetController extends BaseController<BetDetailRecordVO, BetService>
         vo.setPk_period(periodRecordVO.getPk_period());
 
         List<UserIncomeVO> result = service.retrieveUserSumByPeriodAndUser(vo);
+        for (UserIncomeVO uvo : result) {
+            uvo.setTotal_bet(uvo.calcTotal_bet());
+        }
         Long count = service.retrieveUserSumByPeriodAndUserCount(vo);
 
         JquryDataTablesVO rtv = JqueryDataTablesUtil.madeJqueryDatatablesVO(count, result);
