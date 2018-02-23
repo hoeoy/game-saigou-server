@@ -19,10 +19,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Component
 public class SaigouTimer {
@@ -115,6 +112,10 @@ public class SaigouTimer {
                                     //数字
                                     double recentWin = incomeVO.getTotal_bet() * incomeVO.getOdds();//需要盈利多少钱
                                     double nearest = 100000000;//每个号盈利与目标盈利的差值，取差值最近的开奖
+
+
+                                    List<Double[]> mayWinNumList = new ArrayList();//存储收益一致的开奖号码，有可能几个开奖号码都一致,位置0是开奖号码，位置1是win值
+
                                     //设置每个号码庄家佩服金额，遍历十个号码，计算庄家的收益,
                                     for (int i = 1; i <= 10; i++) {
                                         Double oddEvenOut = 0.0;//单双赔多少
@@ -150,15 +151,24 @@ public class SaigouTimer {
                                         double win = incomeVO.getTotal_bet() - pei;//此数字开奖，共盈利多少，负数：庄家赔钱
                                         MethodUtils.invokeMethod(incomeVO, "setWin_" + i, (long) win);
                                         if (win >= 0) {//盈利不能为负数。
-                                            if (Math.abs(win - recentWin) < nearest) {//实际盈利与目标盈利差值小于最小差值
+                                            if (Math.abs(win - recentWin) <= nearest) {//实际盈利与目标盈利差值小于最小差值
                                                 nearest = Math.abs(win - recentWin);
 //                                                //设置开哪个号码,庄家本期收益
 //                                                incomeVO.setTotal_win((long) win);
 //                                                incomeVO.setWin_num(i);
-                                                win_num = i;
+                                                if (mayWinNumList.size() > 0) {
+                                                    double lessWin = mayWinNumList.get(0)[1];
+                                                    if (lessWin != win) {//如果缓存最接近值的与当前选中的最接近值不一样
+                                                        mayWinNumList.clear();//缓存的已经不是最接近值的号码。需要清空。
+                                                    }
+                                                }
+                                                mayWinNumList.add(new Double[]{Double.valueOf(i), win});//缓存最接近值
                                             }
                                         }
                                     }//end of for
+
+                                    //从最接近值缓存里面随机取一个号码
+                                    win_num = (mayWinNumList.get(new Random().nextInt(mayWinNumList.size()))[0]).intValue();
 
                                     Integer win_type = 0;
                                     if (winByHandMap.size() > 0) {//号码为庄家手动定义的
@@ -228,7 +238,7 @@ public class SaigouTimer {
                                         if (wn != null) {
                                             win_num = wn;
                                         }
-                                    }else{
+                                    } else {
                                         win_num = new Random().nextInt(10) + 1;
                                     }
                                     winByHandMap.clear();
