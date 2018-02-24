@@ -4,7 +4,8 @@ import com.houoy.common.exception.AppLoginException;
 import com.houoy.common.vo.RequestResultVO;
 import com.houoy.common.vo.SessionRootUserVO;
 import com.houoy.common.vo.UserVO;
-import com.houoy.game.saigou.config.WebSecurityConfig;
+import com.houoy.game.saigou.config.SessionData;
+import com.houoy.game.saigou.config.URLInterceptor;
 import com.houoy.game.saigou.service.LoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -13,6 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +38,6 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
-
     @ApiOperation(value = "登录")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userVO", value = "用户信息", required = true, paramType = "body", dataType = "UserVO")
@@ -45,8 +46,17 @@ public class LoginController {
     public RequestResultVO signin(HttpServletRequest request, @RequestBody UserVO userVO) throws IOException {
         String user_code = userVO.getUser_code();
         String password = userVO.getUser_password();
-
+        String pk_role = userVO.getPk_role();
         RequestResultVO resultVO = new RequestResultVO();
+        if (!StringUtils.isEmpty(pk_role) && pk_role.equals("1")) {
+            //是登录超级管理员外挂，只能admin用户登录
+            if (!user_code.equals("admin")) {
+                resultVO.setSuccess(false);
+                resultVO.setMsg("只能超级管理员登录");
+                return resultVO;
+            }
+        }
+
         List<UserVO> users = loginService.retrieveByCodeAndPwd(user_code, password);
 //        List<UserVO> users = new ArrayList<>();
 //        UserVO u = new UserVO();
@@ -62,7 +72,17 @@ public class LoginController {
                 HttpSession httpSession = request.getSession();
                 SessionRootUserVO sessionRootUserVO = new SessionRootUserVO();
                 sessionRootUserVO.setUser(users.get(0));
-                httpSession.setAttribute(WebSecurityConfig.Default_Session_Key, sessionRootUserVO);
+                httpSession.setAttribute(URLInterceptor.Default_Session_Key, sessionRootUserVO);
+
+                //3在sessionIDMap中存放此用户sessionID
+                String sessionID = httpSession.getId();
+                if (!SessionData.getSessionIDMap().containsKey(user_code)) { //不存在，首次登陆，放入Map
+                    SessionData.getSessionIDMap().put(user_code, sessionID);
+                } else {//存在
+                    SessionData.getSessionIDMap().remove(user_code);
+                    SessionData.getSessionIDMap().put(user_code, sessionID);
+                }
+
                 resultVO.setSuccess(true);
                 resultVO.setMsg("查询成功");
                 resultVO.setResultData(users.get(0));

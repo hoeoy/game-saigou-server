@@ -2,22 +2,18 @@ package com.houoy.game.saigou.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * 登录配置
  */
 @Configuration
+@EnableWebMvc
 public class WebSecurityConfig extends WebMvcConfigurerAdapter {
-
-    public static final String Default_Session_Key = "user";
 
     //解决bugThe multi-part request contained parameter data (excluding uploaded files) that exceeded the limit for maxPostSize set on the associated connector
 //    @Bean
@@ -32,42 +28,25 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
 //        };
 //    }
 
-    @Bean
-    public SecurityInterceptor getSecurityInterceptor() {
-        return new SecurityInterceptor();
+
+    @Bean   //把我们的拦截器注入为bean
+    public HandlerInterceptor getInterceptor() {
+        return new URLInterceptor();
     }
 
+    @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        InterceptorRegistration addInterceptor = registry.addInterceptor(getSecurityInterceptor());
+        // addPathPatterns 用于添加拦截规则, 这里假设拦截 /url 后面的全部链接
+        // excludePathPatterns 用户排除拦截
+        InterceptorRegistration addInterceptor = registry.addInterceptor(getInterceptor());
 
         // 排除配置
         addInterceptor.excludePathPatterns("/error");
         addInterceptor.excludePathPatterns("/login**");
         addInterceptor.excludePathPatterns("/api/login/**");
-        addInterceptor.excludePathPatterns("/**");
-
-        // addInterceptor.excludePathPatterns("/index**");
 
         // 拦截配置
-        //addInterceptor.addPathPatterns("/**");
-    }
-
-    private class SecurityInterceptor extends HandlerInterceptorAdapter {
-
-        @Override
-        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-                throws Exception {
-            HttpSession session = request.getSession();
-            String sessionID = session.getId();
-            Object mes = session.getAttribute(Default_Session_Key);
-
-            if (session.getAttribute(Default_Session_Key) != null)
-                return true;
-
-            // 跳转登录
-            // String url = "/login";
-            //  response.sendRedirect(url);
-            return false;
-        }
+        addInterceptor.addPathPatterns("/**");
+        super.addInterceptors(registry);
     }
 }
