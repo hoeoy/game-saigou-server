@@ -204,7 +204,7 @@ public class SaigouTimer {
                                         cashFlowVO.setPk_user(pk_user);
                                         cashFlowVO.setPk_period(betVO.getPk_period());
                                         cashFlowVO.setPk_bet(betVO.getPk_bet());
-                                        Long cashMoney = (long) betVO.calcWinMoney(rateTwo, rateNum);
+                                        Long cashMoney = Math.round(betVO.calcWinMoney(rateTwo, rateNum));
                                         cashFlowVO.setMoney(cashMoney);
 
                                         UserVO userVO = users.get(pk_user);

@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * 登录配置
  */
 @Configuration
-@EnableWebMvc
+//@EnableWebMvc
 public class WebSecurityConfig extends WebMvcConfigurerAdapter {
 
     //解决bugThe multi-part request contained parameter data (excluding uploaded files) that exceeded the limit for maxPostSize set on the associated connector
@@ -44,6 +44,7 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
         addInterceptor.excludePathPatterns("/error");
         addInterceptor.excludePathPatterns("/login**");
         addInterceptor.excludePathPatterns("/api/login/**");
+        addInterceptor.excludePathPatterns("/swagger**");
 
         // 拦截配置
         addInterceptor.addPathPatterns("/**");
